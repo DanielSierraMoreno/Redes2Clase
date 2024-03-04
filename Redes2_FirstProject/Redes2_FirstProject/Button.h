@@ -10,9 +10,13 @@ public:
 	typedef std::function<void()> OnClick;
 	OnClick onClick = [](){};
 
+	Button(float x, float y, std::string texturePath); //Mas tarde habra que pasarle la textura ya cargada y no el path para no cargarla 20 veces
+
+	bool CheckBounds(unsigned int x, unsigned int y);
 
 private:
 
+	sf::Texture texture;
 
 
 };

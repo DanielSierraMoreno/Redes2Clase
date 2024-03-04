@@ -8,6 +8,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "SocketsManager.h"
+#include "Window.h"
 
 
 void RunClient();
@@ -24,7 +25,8 @@ int main()
     sf::TcpSocket socket;
     char mode;
 
-    RunWindows();
+
+    //RunWindows();
 
     do
     {
@@ -136,7 +138,19 @@ void RunServer()
 
 void RunWindows()
 {
-    sf::RenderWindow windows;
+    Window window;
+
+    Button* bt = new Button(50, 20, "resources/QG.png");
+
+    bt->onClick = []() {
+        std::cout << std::endl << "Long Live The Queen";
+        };
+
+    window.AddButton(bt);
+    window.RunWindowLoop();
+
+
+   /* sf::RenderWindow windows;
     windows.create(sf::VideoMode(800, 600), "Chat");
     windows.setFramerateLimit(60);
 
@@ -158,5 +172,5 @@ void RunWindows()
         windows.clear(sf::Color::Black);
         windows.draw(label);
         windows.display();
-    }
+    }*/
 }
