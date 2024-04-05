@@ -139,26 +139,52 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Address.cpp" />
+    <ClCompile Include="Board.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Castle.cpp" />
     <ClCompile Include="Chat.cpp" />
     <ClCompile Include="ConsoleControl.cpp" />
+    <ClCompile Include="CreateRoomRequest.cpp" />
+    <ClCompile Include="CreateRoomResponse.cpp" />
+    <ClCompile Include="EnPassant.cpp" />
+    <ClCompile Include="OnEnterAsPlayer.cpp" />
+    <ClCompile Include="OnEnterAsSpectator.cpp" />
     <ClCompile Include="Packet.cpp" />
+    <ClCompile Include="Pieces.cpp" />
+    <ClCompile Include="Promotion.cpp" />
     <ClCompile Include="Redes2_FirstProject.cpp" />
+    <ClCompile Include="RoomData.cpp" />
+    <ClCompile Include="RoomsUpdate.cpp" />
     <ClCompile Include="SocketSelect.cpp" />
     <ClCompile Include="SocketsManager.cpp" />
     <ClCompile Include="TcpListener.cpp" />
     <ClCompile Include="TcpSocket.cpp" />
+    <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Address.h" />
+    <ClInclude Include="Board.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Castle.h" />
     <ClInclude Include="Chat.h" />
     <ClInclude Include="ConsoleControl.h" />
+    <ClInclude Include="CreateRoomRequest.h" />
+    <ClInclude Include="CreateRoomResponse.h" />
+    <ClInclude Include="EnPassant.h" />
+    <ClInclude Include="OnEnterAsPlayer.h" />
+    <ClInclude Include="OnEnterAsSpectator.h" />
     <ClInclude Include="Packet.h" />
+    <ClInclude Include="Pieces.h" />
+    <ClInclude Include="Promotion.h" />
+    <ClInclude Include="RoomData.h" />
+    <ClInclude Include="RoomsUpdate.h" />
     <ClInclude Include="SocketSelect.h" />
     <ClInclude Include="SocketsManager.h" />
     <ClInclude Include="TcpListener.h" />
     <ClInclude Include="TcpSocket.h" />
+    <ClInclude Include="Vector2.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

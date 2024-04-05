@@ -10,8 +10,8 @@ void Window::AddButton(Button* bt)
 {
 	_mutex.lock();
 
-	buttons.push_back(bt);
-	objectsToDraw.push_back(bt);
+	buttons.push_back(bt); //Afegir boto a la llista de botons per gestionar clicks
+	objectsToDraw.push_back(bt); //Afegir boto a la llista de Drawable per renderitzarlo
 
 	_mutex.unlock();
 }
@@ -26,7 +26,7 @@ void Window::RunWindowLoop()
 		{
 			if (drawable != nullptr)
 			{
-				window.draw(*drawable);
+				window.draw(*drawable); //Pintar els renderizables
 			}
 		}
 		window.display();
@@ -49,7 +49,7 @@ void Window::RunWindowLoop()
 					for (auto it = buttons.rbegin(); it != buttons.rend(); it++)
 					{
 						Button* bt = *it;
-						if (bt->CheckBounds(worldPos.x, worldPos.y))
+						if (bt->CheckBounds(worldPos.x, worldPos.y)) //Revisar si sha clickat algun boto
 						{
 							lastClickedDownButton = bt;
 							break;
@@ -65,7 +65,7 @@ void Window::RunWindowLoop()
 					sf::Vector2f worldPos = window.mapPixelToCoords(clickPixelPos);
 
 
-					if (lastClickedDownButton != nullptr && lastClickedDownButton->CheckBounds(worldPos.x, worldPos.y))
+					if (lastClickedDownButton != nullptr && lastClickedDownButton->CheckBounds(worldPos.x, worldPos.y)) //Si havia algun boto clickat el deixem de clickar
 					{
 						lastClickedDownButton->onClick();
 						lastClickedDownButton = nullptr;
