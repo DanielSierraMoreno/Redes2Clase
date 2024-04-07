@@ -26,7 +26,6 @@ int main()
     sf::TcpSocket socket;
     char mode;
     Board board;
-    board.UpdateBoard();
 
     //RunWindows();
     board.run();

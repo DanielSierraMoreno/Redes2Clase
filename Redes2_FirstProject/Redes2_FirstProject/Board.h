@@ -10,39 +10,45 @@
 
 
 enum PieceType {
-    PawnWhite = 1,
-    KnightWhite = 2,
-    BishopWhite = 3,
-    TowerWhite = 4,
-    QueenWhite = 5,
-    KingWhite = 6,
-    PawnBlack = -1,
-    KnightBlack = -2,
-    BishopBlack = -3,
-    TowerBlack = -4,
-    QueenBlack = -5,
-    KingBlack = -6,
+    Pawn = 1,
+    Knight = 2,
+    Bishop = 3,
+    Tower = 4,
+    Queen = 5,
+    King = 6,
     None = 0
+};
+
+class Casilla : public sf::Sprite
+{
+public:
+    Vector2D pos;
+    Piece* piece;
+    PieceType type;
+    Vector2D boardPos;
+
+    Casilla(Vector2D pos, Piece* piece, PieceType type, Vector2D boardPos);
+
 };
 
 class Board {
 private:
     const float WIDTH = 1450;
     const float HEIGTH = 850;
-    std::map<Vector2D, Piece*> pieces;
-    std::map<Vector2D, Vector2D> boardPos;
-    std::map<Vector2D, PieceType> boardPieces;
+    std::map<Vector2D, Casilla*> boardTiles;
+
     sf::Sprite board;
 
     sf::Texture* texturesPiece;
     sf::Texture* textureBoard;
 
     Vector2D posPressed;
-    Piece* pressedPiece;
+    Casilla* pressedTile;
 public:
     Board();
-    void UpdateBoard();
-
+    void TrySelectPiece(sf::Vector2f worldPos);
+    void TryReleasePiece(sf::Vector2f worldPos);
     void run();
+    Piece* GetEmptyPiece(Vector2D pixelPos);
 
 };

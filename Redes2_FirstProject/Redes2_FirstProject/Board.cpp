@@ -6,7 +6,7 @@
 
 Board::Board()
 {
-    pressedPiece = nullptr;
+    pressedTile = nullptr;
     texturesPiece = new sf::Texture;
     if (!texturesPiece->loadFromFile("resources/Piezas.png"))
     {
@@ -21,7 +21,7 @@ Board::Board()
     board.setTexture(*textureBoard);
     board.setPosition(0, 0);
     board.setScale(3,3);
-    float posX = 5, posY = 5;
+    float posX = 9, posY = 9;
     float size = 84;
 
 
@@ -29,115 +29,156 @@ Board::Board()
     {
         for (int e = 0; e < 8; e++)
         {
-            pieces.emplace(Vector2D(i,e),nullptr);
-            boardPos.emplace(Vector2D(i, e), Vector2D(posX + (size * (1 + e)), posY + (size * (1 + i))));
+            PieceType type;
+            Piece* piece = new Piece();
+            Vector2D pixelPos = Vector2D(posX + (size * (1 + e)), posY + (size * (1 + i)));
+
+            PieceColor color = i <= 1 ? PieceColor::WHITE : PieceColor::BLACK;
+            int textureYCord = i <= 1 ? 64 : 0;
+
+            if (i == 0 || i == 7)     
+                switch (e)
+                {
+                case 0:
+                case 7:
+
+                    type = PieceType::Tower;
+                    piece = new tower(texturesPiece, pixelPos);
+                    piece->SetPiece(sf::IntRect(128, textureYCord, 64, 64), color);
+                    break;
+                case 1:
+                case 6:
+
+                    type = PieceType::Knight;
+                    piece = new knight(texturesPiece, pixelPos);
+                    piece->SetPiece(sf::IntRect(192, textureYCord, 64, 64), color);
+                    break;
+                case 2:
+                case 5:
+
+                    type = PieceType::Bishop;
+                    piece = new bishop(texturesPiece, pixelPos);
+                    piece->SetPiece(sf::IntRect(256, textureYCord, 64, 64), color);
+                    break;
+                case 3:
+                    type = PieceType::Queen;
+                    piece = new queen(texturesPiece, pixelPos);
+                    piece->SetPiece(sf::IntRect(64, textureYCord, 64, 64), color);
+                    break;
+                case 4:
+                    type = PieceType::King;
+                    piece = new king(texturesPiece, pixelPos);
+                    piece->SetPiece(sf::IntRect(0, textureYCord, 64, 64), color);
+                    break;
+
+                default:
+                    break;
+                }
+            else if (i == 1 || i == 6)
+            {
+                type = PieceType::Pawn;
+                piece = new pawn(texturesPiece, pixelPos);
+                piece->SetPiece(sf::IntRect(320, textureYCord, 64, 64), color);
+            }
+            else
+            {
+                type = PieceType::None;
+                piece = GetEmptyPiece(pixelPos);
+            }
+
+         
+            boardTiles.emplace(Vector2D(i,e), new Casilla(pixelPos,
+                piece,
+                type,
+                Vector2D(i, e)));
 
 
         }
     }
-    boardPieces[Vector2D(0, 0)] = TowerWhite;
-    boardPieces[Vector2D(0, 1)] = KnightWhite;
-    boardPieces[Vector2D(0, 2)] = BishopWhite;
-    boardPieces[Vector2D(0, 3)] = QueenWhite;
-    boardPieces[Vector2D(0, 4)] = KingWhite;
-    boardPieces[Vector2D(0, 5)] = BishopWhite;
-    boardPieces[Vector2D(0, 6)] = KnightWhite;
-    boardPieces[Vector2D(0, 7)] = TowerWhite;
-    for (int i = 0; i <= 8; ++i) {
-        boardPieces[Vector2D(1, i)] = PawnWhite;
-        boardPieces[Vector2D(6, i)] = PawnBlack;
-    }
-    boardPieces[Vector2D(7, 0)] = TowerBlack;
-    boardPieces[Vector2D(7, 1)] = KnightBlack;
-    boardPieces[Vector2D(7, 2)] = BishopBlack;
-    boardPieces[Vector2D(7, 3)] = QueenBlack;
-    boardPieces[Vector2D(7, 4)] = KingBlack;
-    boardPieces[Vector2D(7, 5)] = BishopBlack;
-    boardPieces[Vector2D(7, 6)] = KnightBlack;
-    boardPieces[Vector2D(7, 7)] = TowerBlack;
 
 }
 
-void Board::UpdateBoard()
+Piece* Board::GetEmptyPiece(Vector2D pixelPos)
+{
+    Piece* piece;
+    piece = new Piece(texturesPiece, pixelPos);
+    piece->SetPiece(sf::IntRect(320, 0, 64, 64), NONE);
+    piece->setColor(sf::Color(0, 0, 0, 0));
+    return piece;
+}
+void Board::TrySelectPiece(sf::Vector2f worldPos)
 {
     for (int i = 0; i < 8; i++)
     {
         for (int e = 0; e < 8; e++)
         {
-            PieceType piece;
 
-            piece = boardPieces[Vector2D(i, e)];
-
-            pieces[Vector2D(i, e)] = nullptr;
-            switch(piece)
+            if (boardTiles[Vector2D(i, e)]->type != PieceType::None)
             {
-            case PawnWhite:
-                pieces[Vector2D(i, e)] = new pawn(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(320, 64, 64, 64), PieceColor::WHITE);
-                break;
-            case KnightWhite:
-                pieces[Vector2D(i, e)] = new knight(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(192, 64, 64, 64), PieceColor::WHITE);
-                break;
-            case BishopWhite:
-                pieces[Vector2D(i, e)] = new bishop(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(256, 64, 64, 64), PieceColor::WHITE);
-                break;
-            case TowerWhite:
+                if (boardTiles[Vector2D(i, e)]->piece->GetColor() == PieceColor::WHITE)
+                {
+                    if (boardTiles[Vector2D(i, e)]->piece->CheckBounds(worldPos.x, worldPos.y))
+                    {
+                        pressedTile = boardTiles[Vector2D(i, e)];
 
-                pieces[Vector2D(i, e)] = new tower(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(128, 64, 64, 64), PieceColor::WHITE);
-                break;
-            case QueenWhite:
-                pieces[Vector2D(i, e)] = new queen(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(64, 64, 64, 64), PieceColor::WHITE);
-                break;
-            case KingWhite:
-                pieces[Vector2D(i, e)] = new king(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(0, 64, 64, 64), PieceColor::WHITE);
-                break;
-            case PawnBlack:
-                pieces[Vector2D(i, e)] = new pawn(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(320, 0, 64, 64), PieceColor::BLACK);
-                break;
-            case KnightBlack:
-                pieces[Vector2D(i, e)] = new knight(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(192, 0, 64, 64), PieceColor::BLACK);
-                break;
-            case BishopBlack:
-                pieces[Vector2D(i, e)] = new bishop(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(256, 0, 64, 64), PieceColor::BLACK);
-                break;
-            case TowerBlack:
-                pieces[Vector2D(i, e)] = new tower(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(128, 0, 64, 64), PieceColor::BLACK);
-                break;
-            case QueenBlack:
-                pieces[Vector2D(i, e)] = new queen(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(64, 0, 64, 64), PieceColor::BLACK);
-                break;
-            case KingBlack:
-                pieces[Vector2D(i, e)] = new king(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(0, 0, 64, 64), PieceColor::BLACK);
-                break;
-            case None:
-                pieces[Vector2D(i, e)] = new Piece(texturesPiece, boardPos[Vector2D(i, e)]);
-                pieces[Vector2D(i, e)]->SetPiece(sf::IntRect(50, 50, 64, 64), PieceColor::NONE);
-                pieces[Vector2D(i, e)]->setColor(sf::Color(0, 0, 0, 0));
-                break;
-            default:
-                break;
+                    }
+                }
+
             }
-            pieces[Vector2D(i, e)]->setScale(1.2, 1.2);
+
+
         }
     }
-
 }
+
+
+void Board::TryReleasePiece(sf::Vector2f worldPos)
+{
+
+    for (int i = 0; i < 8; i++)
+    {
+        for (int e = 0; e < 8; e++)
+        {
+
+
+            if (boardTiles[Vector2D(i, e)]->piece->GetColor() != PieceColor::WHITE)
+            {
+                if (boardTiles[Vector2D(i, e)]->piece->CheckBounds(worldPos.x, worldPos.y))
+                {
+                    if (pressedTile == nullptr)
+                        return;
+                    if (pressedTile->piece->CheckMove(Vector2D(i, e)))
+                    {
+                        Vector2D boardPos = pressedTile->boardPos;
+                        Vector2D pixelPos = pressedTile->piece->GetPos();
+
+                        pressedTile->piece->SetPosition(boardTiles[Vector2D(i, e)]->pos);
+                        boardTiles[Vector2D(i, e)]->piece = pressedTile->piece;
+                        boardTiles[Vector2D(i, e)]->type = pressedTile->type;
+
+
+                        boardTiles[boardPos]->piece = GetEmptyPiece(pixelPos);
+                        boardTiles[boardPos]->type = None;
+
+                        pressedTile = nullptr;
+
+                    }
+
+
+                }
+            }
+
+            
+
+
+        }
+    }
+}
+
 
 void Board::run()
 {
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGTH), "Chess The Game Of Kings!");
-    UpdateBoard();
 
     while (window.isOpen())
     {
@@ -150,7 +191,7 @@ void Board::run()
         {
             for (int e = 0; e < 8; e++)
             {
-                sf::Drawable* drawable = pieces[Vector2D(i, e)];
+                sf::Drawable* drawable = boardTiles[Vector2D(i, e)]->piece;
                 if (drawable != nullptr)
                 {
                     window.draw(*drawable); //Pintar els renderizables
@@ -167,10 +208,7 @@ void Board::run()
         {
             sf::Vector2i clickPixelPos = { event.mouseButton.x, event.mouseButton.y };
             sf::Vector2f worldPos = window.mapPixelToCoords(clickPixelPos);
-            if (pressedPiece != nullptr)
-            {
-                pressedPiece->SetPosition(Vector2D(worldPos.x - 32, worldPos.y - 32));
-            }
+
 
             switch (event.type)
             {
@@ -181,19 +219,14 @@ void Board::run()
 
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
+                    if (pressedTile == nullptr)
+                        TrySelectPiece(worldPos);
+                    else
+                        TryReleasePiece(worldPos);
 
-                    for (int i = 0; i < 8; i++)
-                    {
-                        for (int e = 0; e < 8; e++)
-                        {
-                            if (pieces[Vector2D(i, e)]->CheckBounds(worldPos.x, worldPos.y) && pressedPiece == nullptr)
-                            {
-                                pressedPiece = pieces[Vector2D(i, e)];
-                                
-                            }
+                  
 
-                        }
-                    }
+
           
                 }
 
@@ -202,10 +235,7 @@ void Board::run()
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
 
-                    if (pressedPiece != nullptr)
-                    {
-                        pressedPiece = nullptr;
-                    }
+
 
                 }
                 break;
@@ -217,4 +247,12 @@ void Board::run()
             }
         }
     }
+}
+
+Casilla::Casilla(Vector2D pos, Piece* piece, PieceType type, Vector2D boardPos)
+{
+    this->pos = pos;
+    this->piece = piece;
+    this->type = type;
+    this->boardPos = boardPos;
 }

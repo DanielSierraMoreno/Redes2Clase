@@ -10,18 +10,26 @@ enum PieceColor {
 	NONE = 2
 };
 
+
+
+
 class Piece : public sf::Sprite
 {
 private:
 	Vector2D pos;
 	PieceColor color;
 public:
-	Piece(sf::Texture* texture);
+
+	Piece();
 	Piece(sf::Texture* texture, Vector2D pos);
 	void SetPosition(Vector2D pos);
 	void SetPiece(sf::IntRect region, PieceColor color);
 	Vector2D GetPos();
+	PieceColor GetColor();
 	bool CheckBounds(unsigned int x, unsigned int y);
+	std::vector<Vector2D> GetPosiblesMoves();
+	virtual bool CheckMove(Vector2D pos);
+
 };
 
 
@@ -31,6 +39,7 @@ private:
 
 public:
 	king(sf::Texture* texture, Vector2D pos);
+	virtual bool CheckMove(Vector2D pos) override;
 
 
 };
@@ -43,6 +52,7 @@ private:
 
 public:
 	knight(sf::Texture* texture, Vector2D pos);
+	virtual bool CheckMove(Vector2D pos) override;
 
 };
 
@@ -53,6 +63,7 @@ private:
 
 public:
 	pawn(sf::Texture* texture, Vector2D pos);
+	virtual bool CheckMove(Vector2D pos) override;
 
 };
 
@@ -63,6 +74,7 @@ private:
 
 public:
 	queen(sf::Texture* texture, Vector2D pos);
+	virtual bool CheckMove(Vector2D pos) override;
 
 
 };
@@ -75,6 +87,7 @@ private:
 
 public:
 	tower(sf::Texture* texture, Vector2D pos);
+	virtual bool CheckMove(Vector2D pos) override;
 
 
 };
@@ -86,6 +99,7 @@ private:
 
 public:
 	bishop(sf::Texture* texture, Vector2D pos);
+	virtual bool CheckMove(Vector2D pos) override;
 
 };
 
