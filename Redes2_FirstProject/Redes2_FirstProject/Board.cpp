@@ -144,7 +144,7 @@ std::vector<Vector2D> Board::GetEnemyPosibleMovements(PieceColor current)
                 else if (boardTiles[Vector2D(i, e)]->type == Pawn)
                 {
                     std::vector<Vector2D> list2;
-                    list2 = dynamic_cast<pawn*>(boardTiles[Vector2D(i, e)]->piece)->GetPosiblesMovesFake(Vector2D(i, e), *this,current);
+                    list2 = dynamic_cast<pawn*>(boardTiles[Vector2D(i, e)]->piece)->GetPosiblesAttackMoves(Vector2D(i, e), *this,current);
                     list.insert(list.end(), list2.begin(), list2.end());
                 }
                 else
@@ -284,8 +284,6 @@ void Board::TryReleasePiece(sf::Vector2f worldPos)
                         //Mandar socket a todos los player
 
 
-
-
                         CheckJaque((PieceColor) (-(int)currentPlayer->playerColor));
 
                         currentPlayer->jaque = false;
@@ -300,10 +298,6 @@ void Board::TryReleasePiece(sf::Vector2f worldPos)
 
                 }
             }
-
-            
-
-
         }
     }
 }

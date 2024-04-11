@@ -99,7 +99,7 @@ private:
 public:
 	pawn(sf::Texture* texture, Vector2D pos);
 	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D currentPos, Board board, PieceColor current) override;
-	std::vector<Vector2D> GetPosiblesMovesFake(Vector2D currentPos, Board board, PieceColor current);
+	std::vector<Vector2D> GetPosiblesAttackMoves(Vector2D currentPos, Board board, PieceColor current);
 
 };
 

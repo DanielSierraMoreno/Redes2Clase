@@ -324,8 +324,6 @@ std::vector<Vector2D> bishop::GetPosiblesMoves(Vector2D currentPos, Board board,
 queen::queen(sf::Texture* texture, Vector2D pos) :Piece(texture, pos)
 {
 }
-
-
 std::vector<Vector2D> queen::GetPosiblesMoves(Vector2D currentPos, Board board, PieceColor current)
 {
 	std::vector<Vector2D> list;
@@ -643,7 +641,7 @@ std::vector<Vector2D> pawn::GetPosiblesMoves(Vector2D currentPos, Board board, P
 	return list;
 }
 
-std::vector<Vector2D> pawn::GetPosiblesMovesFake(Vector2D currentPos, Board board, PieceColor current)
+std::vector<Vector2D> pawn::GetPosiblesAttackMoves(Vector2D currentPos, Board board, PieceColor current)
 {
 
 	std::vector<Vector2D> list;
@@ -702,8 +700,6 @@ knight::knight(sf::Texture* texture, Vector2D pos) :Piece(texture, pos)
 
 std::vector<Vector2D> knight::GetPosiblesMoves(Vector2D currentPos, Board board, PieceColor current)
 {
-
-
 
 	std::vector<Vector2D> list;
 

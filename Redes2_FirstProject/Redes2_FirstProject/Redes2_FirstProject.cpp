@@ -10,7 +10,7 @@
 
 #include "SocketsManager.h"
 #include "Window.h"
-
+#include "RoomManager.h"
 
 void RunClient();
 void RunServer();
@@ -26,9 +26,9 @@ int main()
     sf::TcpSocket socket;
     char mode;
     Board board;
+    RoomManager manager;
+    //board.run();
 
-    //RunWindows();
-    board.run();
 
     do
     {
@@ -46,12 +46,14 @@ int main()
         break;
     case 'C':
     case 'c':
+        //manager.Init();
         RunClient(); //Iniciem Client
 
         break;
     default:
         break;
     }
+
 
     while (true)
     {
