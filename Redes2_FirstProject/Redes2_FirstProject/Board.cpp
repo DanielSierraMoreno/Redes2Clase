@@ -281,6 +281,9 @@ void Board::TryReleasePiece(sf::Vector2f worldPos)
                         pressedTile = nullptr;
                         ResetPosibleMoves();
 
+                        //Mandar socket a todos los player
+
+
 
 
                         CheckJaque((PieceColor) (-(int)currentPlayer->playerColor));

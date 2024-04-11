@@ -621,7 +621,7 @@ std::vector<Vector2D> pawn::GetPosiblesMoves(Vector2D currentPos, Board board, P
 				int posY = currentPos.y;
 
 		
-				if (board.boardTiles[Vector2D(posX+1, posY)]->piece->GetColor() == -current || board.boardTiles[Vector2D(posX, posY)]->piece->GetColor() == -current || board.boardTiles[Vector2D(posX+1, posY)]->piece->GetColor() == current || board.boardTiles[Vector2D(posX, posY)]->piece->GetColor() == current)
+				if (board.boardTiles[Vector2D(posX - direction, posY)]->piece->GetColor() == -current || board.boardTiles[Vector2D(posX, posY)]->piece->GetColor() == -current || board.boardTiles[Vector2D(posX - direction, posY)]->piece->GetColor() == current || board.boardTiles[Vector2D(posX, posY)]->piece->GetColor() == current)
 				{
 
 				}
