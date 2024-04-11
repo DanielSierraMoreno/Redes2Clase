@@ -16,6 +16,7 @@ void Window::AddButton(Button* bt)
 	_mutex.unlock();
 }
 
+
 void Window::RunWindowLoop()
 {
 	while (window.isOpen())
