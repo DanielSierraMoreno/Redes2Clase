@@ -12,16 +12,14 @@ enum PieceColor {
 
 
 enum PieceType {
-	Pawn = 1,
-	Knight = 2,
-	Bishop = 3,
-	Tower = 4,
-	Queen = 5,
-	King = 6,
+	pawn = 1,
+	knight = 2,
+	bishop = 3,
+	tower = 4,
+	queen = 5,
+	king = 6,
 	None = 0
 };
-class Piece;
-
 class Board;
 class Player
 {
@@ -32,23 +30,16 @@ public:
 	Player(PieceColor playerColor) { this->playerColor = playerColor; jaque = false; jaqueMate = false; }
 };
 
-class Casilla : public sf::Sprite
-{
-public:
-	Vector2D pos;
-	Piece* piece;
-	PieceType type;
-	Vector2D boardPos;
-	sf::RectangleShape* marca;
-	Casilla(Vector2D pos, Piece* piece, PieceType type, Vector2D boardPos);
 
-};
 
 class Piece : public sf::Sprite
 {
 private:
 	Vector2D pos;
 	PieceColor color;
+protected:
+	std::vector<Vector2D> movements;
+	int range = 8;
 public:
 	std::vector<Vector2D> posibleMoves;
 
@@ -60,83 +51,7 @@ public:
 	Vector2D GetPos();
 	PieceColor GetColor();
 	bool CheckBounds(unsigned int x, unsigned int y);
-	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D currentPos, Board board, PieceColor current);
+	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D ArrayIndex, Board board, PieceColor current);
 	bool CheckMove(Vector2D pos);
 
 };
-
-
-class king: public Piece
-{
-private:
-
-public:
-	king();
-	king(sf::Texture* texture, Vector2D pos);
-	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D currentPos, Board board, PieceColor current) override;
-	std::vector<Vector2D> GetPosiblesMovesFake(Vector2D currentPos, Board board, PieceColor current);
-
-
-};
-
-
-class knight : public Piece
-{
-private:
-
-
-public:
-	knight(sf::Texture* texture, Vector2D pos);
-	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D currentPos, Board board, PieceColor current) override;
-
-};
-
-class pawn : public Piece
-{
-private:
-
-
-public:
-	pawn(sf::Texture* texture, Vector2D pos);
-	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D currentPos, Board board, PieceColor current) override;
-	std::vector<Vector2D> GetPosiblesAttackMoves(Vector2D currentPos, Board board, PieceColor current);
-
-};
-
-class queen : public Piece
-{
-private:
-
-
-public:
-	queen(sf::Texture* texture, Vector2D pos);
-	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D currentPos, Board board, PieceColor current) override;
-
-
-};
-
-
-class tower : public Piece
-{
-private:
-
-
-public:
-	tower(sf::Texture* texture, Vector2D pos);
-	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D currentPos, Board board, PieceColor current) override;
-
-
-};
-
-class bishop : public Piece
-{
-private:
-
-
-public:
-	bishop(sf::Texture* texture, Vector2D pos);
-	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D currentPos, Board board, PieceColor current) override;
-
-};
-
-

@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Address.cpp" />
+    <ClCompile Include="Bishop.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Castle.cpp" />
@@ -148,11 +149,15 @@
     <ClCompile Include="CreateRoomRequest.cpp" />
     <ClCompile Include="CreateRoomResponse.cpp" />
     <ClCompile Include="EnPassant.cpp" />
+    <ClCompile Include="King.cpp" />
+    <ClCompile Include="Knight.cpp" />
     <ClCompile Include="OnEnterAsPlayer.cpp" />
     <ClCompile Include="OnEnterAsSpectator.cpp" />
     <ClCompile Include="Packet.cpp" />
+    <ClCompile Include="Pawn.cpp" />
     <ClCompile Include="Pieces.cpp" />
     <ClCompile Include="Promotion.cpp" />
+    <ClCompile Include="Queen.cpp" />
     <ClCompile Include="Redes2_FirstProject.cpp" />
     <ClCompile Include="RoomData.cpp" />
     <ClCompile Include="RoomManager.cpp" />
@@ -161,11 +166,14 @@
     <ClCompile Include="SocketsManager.cpp" />
     <ClCompile Include="TcpListener.cpp" />
     <ClCompile Include="TcpSocket.cpp" />
+    <ClCompile Include="tile.cpp" />
+    <ClCompile Include="Tower.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Address.h" />
+    <ClInclude Include="Bishop.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Castle.h" />
@@ -174,11 +182,15 @@
     <ClInclude Include="CreateRoomRequest.h" />
     <ClInclude Include="CreateRoomResponse.h" />
     <ClInclude Include="EnPassant.h" />
+    <ClInclude Include="King.h" />
+    <ClInclude Include="Knight.h" />
     <ClInclude Include="OnEnterAsPlayer.h" />
     <ClInclude Include="OnEnterAsSpectator.h" />
     <ClInclude Include="Packet.h" />
+    <ClInclude Include="Pawn.h" />
     <ClInclude Include="Pieces.h" />
     <ClInclude Include="Promotion.h" />
+    <ClInclude Include="Queen.h" />
     <ClInclude Include="RoomData.h" />
     <ClInclude Include="RoomManager.h" />
     <ClInclude Include="RoomsUpdate.h" />
@@ -186,6 +198,8 @@
     <ClInclude Include="SocketsManager.h" />
     <ClInclude Include="TcpListener.h" />
     <ClInclude Include="TcpSocket.h" />
+    <ClInclude Include="tile.h" />
+    <ClInclude Include="Tower.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

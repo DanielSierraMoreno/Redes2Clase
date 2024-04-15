@@ -1,15 +1,19 @@
 #pragma once
-#include "Pieces.h"
 #include "Board.h"
-
-
+#include "Pieces.h"
+#include "Queen.h"
+#include "Knight.h"
+#include "King.h"
+#include "Tower.h"
+#include "Pawn.h"
+#include "Bishop.h"
 
 Board::Board()
 {
     players.push_back(new Player(WHITE));
     players.push_back(new Player(BLACK));
     currentPlayer = players[0];
-    pressedTile = nullptr;
+    pickedPieceTile = nullptr;
     texturesPiece = new sf::Texture;
     if (!texturesPiece->loadFromFile("resources/Piezas.png"))
     {
@@ -24,63 +28,59 @@ Board::Board()
     board.setTexture(*textureBoard);
     board.setPosition(0, 0);
     board.setScale(3,3);
-    float posX = 9, posY = 9;
-    float size = 84;
-
-
-    for (int i = 0; i < 8; i++)
+ 
+    for (int y = 0; y < 8; y++)
     {
-        for (int e = 0; e < 8; e++)
+        for (int x = 0; x < 8; x++)
         {
             PieceType type;
             Piece* piece = new Piece();
-            Vector2D pixelPos = Vector2D(posX + (size * (1 + e)), posY + (size * (1 + i)));
+            Vector2D pixelPos = BoardToWorldPos(Vector2D(x, y));
+            PieceColor color = y <= 1 ? PieceColor::WHITE : PieceColor::BLACK;
+            int textureYCord = y <= 1 ? 64 : 0;
 
-            PieceColor color = i <= 1 ? PieceColor::WHITE : PieceColor::BLACK;
-            int textureYCord = i <= 1 ? 64 : 0;
-
-            if (i == 0 || i == 7)     
-                switch (e)
+            if (y == 0 || y == 7)     
+                switch (x)
                 {
                 case 0:
                 case 7:
 
-                    type = PieceType::Tower;
-                    piece = new tower(texturesPiece, pixelPos);
+                    type = PieceType::tower;
+                    piece = new Tower(texturesPiece, pixelPos);
                     piece->SetPiece(sf::IntRect(128, textureYCord, 64, 64), color);
                     break;
                 case 1:
                 case 6:
 
-                    type = PieceType::Knight;
-                    piece = new knight(texturesPiece, pixelPos);
+                    type = PieceType::knight;
+                    piece = new Knight(texturesPiece, pixelPos);
+
                     piece->SetPiece(sf::IntRect(192, textureYCord, 64, 64), color);
                     break;
                 case 2:
                 case 5:
-
-                    type = PieceType::Bishop;
-                    piece = new bishop(texturesPiece, pixelPos);
+                    type = PieceType::bishop;
+                    piece = new Bishop(texturesPiece, pixelPos);
                     piece->SetPiece(sf::IntRect(256, textureYCord, 64, 64), color);
                     break;
                 case 4:
-                    type = PieceType::Queen;
-                    piece = new queen(texturesPiece, pixelPos);
+                    type = PieceType::queen;
+                    piece = new Queen(texturesPiece, pixelPos);
                     piece->SetPiece(sf::IntRect(64, textureYCord, 64, 64), color);
                     break;
                 case 3:
-                    type = PieceType::King;
-                    piece = new king(texturesPiece, pixelPos);
+                    type = PieceType::king;
+                    piece = new King(texturesPiece, pixelPos);
                     piece->SetPiece(sf::IntRect(0, textureYCord, 64, 64), color);
                     break;
 
                 default:
                     break;
                 }
-            else if (i == 1 || i == 6)
+            else if (y == 1 || y == 6)
             {
-                type = PieceType::Pawn;
-                piece = new pawn(texturesPiece, pixelPos);
+                type = PieceType::pawn;
+                piece = new Pawn(texturesPiece, pixelPos);
                 piece->SetPiece(sf::IntRect(320, textureYCord, 64, 64), color);
             }
             else
@@ -88,16 +88,11 @@ Board::Board()
                 type = PieceType::None;
                 piece = GetEmptyPiece(pixelPos);
             }
-
-         
-            boardTiles.emplace(Vector2D(i,e), new Casilla(pixelPos,
+            boardTiles.emplace(Vector2D(x,y), new Tile(pixelPos,
                 piece,
-                type,
-                Vector2D(i, e)));
-
+                type));
         }
     }
-
 }
 
 Piece* Board::GetEmptyPiece(Vector2D pixelPos)
@@ -117,65 +112,76 @@ void Board::PosibleMoves(std::vector<Vector2D> moves)
 }
 void Board::ResetPosibleMoves()
 {
-    for (int i = 0; i < 8; i++)
-    {
-        for (int e = 0; e < 8; e++)
-        {
-            boardTiles[Vector2D(i, e)]->marca->setFillColor(sf::Color(0, 255, 0, 0));
-
-        }
+    for (const auto& pair : boardTiles) {
+        Tile* tile = pair.second;
+        tile->marca->setFillColor(sf::Color(0, 255, 0, 0));
     }
 }
 std::vector<Vector2D> Board::GetEnemyPosibleMovements(PieceColor current)
 {
     std::vector<Vector2D> list;
-    for (int i = 0; i < 8; i++)
+    for (int y = 0; y < 8; y++)
     {
-        for (int e = 0; e < 8; e++)
+        for (int x = 0; x < 8; x++)
         {
-            if (boardTiles[Vector2D(i, e)]->piece->GetColor() == current)
+            PieceColor enemyColor = boardTiles[Vector2D(x, y)]->piece->GetColor();
+            if (enemyColor != -current)
+                continue;
+            if (boardTiles[Vector2D(x, y)]->type == king)
             {
-                if (boardTiles[Vector2D(i, e)]->type == King)
-                {
-                    std::vector<Vector2D> list2;
-                    list2 = dynamic_cast<king*>(boardTiles[Vector2D(i, e)]->piece)->GetPosiblesMovesFake(Vector2D(i, e), *this,current);
-                    list.insert(list.end(), list2.begin(), list2.end());
-                }
-                else if (boardTiles[Vector2D(i, e)]->type == Pawn)
-                {
-                    std::vector<Vector2D> list2;
-                    list2 = dynamic_cast<pawn*>(boardTiles[Vector2D(i, e)]->piece)->GetPosiblesAttackMoves(Vector2D(i, e), *this,current);
-                    list.insert(list.end(), list2.begin(), list2.end());
-                }
-                else
-                {
-                    std::vector<Vector2D> list2;
-                    list2 = boardTiles[Vector2D(i, e)]->piece->GetPosiblesMoves(Vector2D(i, e), *this,current);
-                    list.insert(list.end(), list2.begin(), list2.end());
-                }
-
-
+                std::vector<Vector2D> list2;
+                list2 = dynamic_cast<King*>(boardTiles[Vector2D(x, y)]->piece)->GetPosiblesMovesFake(Vector2D(x, y), *this, enemyColor);
+                list.insert(list.end(), list2.begin(), list2.end());
             }
-
+            else if (boardTiles[Vector2D(x, y)]->type == pawn)
+            {
+                std::vector<Vector2D> list2;
+                list2 = dynamic_cast<Pawn*>(boardTiles[Vector2D(x, y)]->piece)->GetPosiblesAttackMoves(Vector2D(x, y), *this, enemyColor);
+                list.insert(list.end(), list2.begin(), list2.end());
+            }
+            else
+            {
+                std::vector<Vector2D> list2;
+                list2 = boardTiles[Vector2D(x, y)]->piece->GetPosiblesMoves(Vector2D(x, y), *this, enemyColor);
+                list.insert(list.end(), list2.begin(), list2.end());
+            }
         }
     }
-
-
     return list;
+}
+std::vector<Vector2D> Board::FilterEnemyTiles(std::vector<Vector2D> tiles, PieceColor color) 
+{
+    std::vector<Vector2D> filteredList;
+    for (Vector2D tileIndex: tiles)
+    {
+        PieceColor tilePiececolor = boardTiles[tileIndex]->piece->GetColor();
+        if (tilePiececolor == -color)
+            filteredList.push_back(tileIndex);
+    }
+    return filteredList;
+}
+std::vector<Vector2D> Board::FilterEmpty(std::vector<Vector2D> tiles)
+{
+    std::vector<Vector2D> filteredList;
+    for (Vector2D tileIndex : tiles)
+    {
+        if (IsTileEmpty(boardTiles[tileIndex]))
+            filteredList.push_back(tileIndex);
+    }
+    return filteredList;
 }
 
 void Board::CheckJaque(PieceColor current)
 {
     std::vector<Vector2D> list = GetEnemyPosibleMovements(current);
     Vector2D kingPos;
-    for (int i = 0; i < 8; i++)
+    for (int y = 0; y < 8; y++)
     {
-        for (int e = 0; e < 8; e++)
+        for (int x = 0; x < 8; x++)
         {
-            if (boardTiles[Vector2D(i, e)]->type == King && boardTiles[Vector2D(i, e)]->piece->GetColor() == currentPlayer->playerColor)
+            if (boardTiles[Vector2D(x,y)]->type == king && boardTiles[Vector2D(x,y)]->piece->GetColor() == currentPlayer->playerColor)
             {
-                kingPos = Vector2D(i, e);
-
+                kingPos = Vector2D(x,y);
             }
         }
     }
@@ -186,15 +192,13 @@ void Board::CheckJaque(PieceColor current)
         else
             currentPlayer->jaqueMate = true;
 
-
-        for (int i = 0; i < 8; i++)
+        for (int y = 0; y < 8; y++)
         {
-            for (int e = 0; e < 8; e++)
+            for (int x = 0; x < 8; x++)
             {
-                if (boardTiles[Vector2D(i, e)]->type == King && boardTiles[Vector2D(i, e)]->piece->GetColor() == currentPlayer->playerColor)
+                if (boardTiles[Vector2D(x, y)]->type == king && boardTiles[Vector2D(x, y)]->piece->GetColor() == currentPlayer->playerColor)
                 {
-                    kingPos = Vector2D(i, e);
-
+                    kingPos = Vector2D(x, y);
                 }
             }
         }
@@ -207,101 +211,140 @@ void Board::CheckJaque(PieceColor current)
     }
 }
 
-void Board::TrySelectPiece(sf::Vector2f worldPos)
+std::vector<Vector2D> Board::GetPositionsFromDirection(Vector2D arrayIndex,PieceColor pieceColor,Vector2D dir, int range)
 {
-    for (int i = 0; i < 8; i++)
+    std::vector<Vector2D> posibleTiles;
+    for (int i = 1; i <= range; i++)
     {
-        for (int e = 0; e < 8; e++)
+        Vector2D checkIndex = arrayIndex + (dir * i);
+        if (!IsValidIndex(checkIndex))
+            continue;
+        if (IsTileAlly(boardTiles[checkIndex], pieceColor))
         {
-
-            if (boardTiles[Vector2D(i, e)]->type != PieceType::None)
-            {
-                if (boardTiles[Vector2D(i, e)]->piece->GetColor() == currentPlayer->playerColor)
-                {
-                    if (boardTiles[Vector2D(i, e)]->piece->CheckBounds(worldPos.x, worldPos.y))
-                    {
-
-                        if (currentPlayer->jaque)
-                        {
-
-                                pressedTile = boardTiles[Vector2D(i, e)];
-                                ResetPosibleMoves();
-
-                                PosibleMoves(pressedTile->piece->GetPosiblesMoves(Vector2D(i, e), *this, currentPlayer->playerColor));
-                            
-                        }
-                        else
-                        {
-                            pressedTile = boardTiles[Vector2D(i, e)];
-                            ResetPosibleMoves();
-
-                            PosibleMoves(pressedTile->piece->GetPosiblesMoves(Vector2D(i, e),*this, currentPlayer->playerColor));
-                        }
-  
-                    }
-                }
-
-            }
-
-
+            return posibleTiles;
         }
+        else if (IsTileEnemy(boardTiles[checkIndex], pieceColor))
+        {
+            posibleTiles.push_back(checkIndex);
+            return posibleTiles;
+        }
+        else if (IsTileEmpty(boardTiles[checkIndex]))
+        {
+            posibleTiles.push_back(checkIndex);
+        }
+    }
+    return posibleTiles;
+}
+Vector2D Board::GetPositionTeleport(Vector2D arrayIndex,PieceColor pieceColor, Vector2D dir)
+{
+    Vector2D tileIndexPosition = arrayIndex + (dir);
+    if (!IsValidIndex(tileIndexPosition))
+        return Vector2D::None();
+    if (IsTileAlly(boardTiles[tileIndexPosition], pieceColor))
+    {
+        return Vector2D::None();
+    }
+    else if (IsTileEnemy(boardTiles[tileIndexPosition], pieceColor))
+    {
+        return tileIndexPosition;
+    }
+    else if (IsTileEmpty(boardTiles[tileIndexPosition]))
+    {
+        return tileIndexPosition;
+    }
+    return tileIndexPosition;
+}
+bool Board::IsValidIndex(Vector2D arrayIndex)
+{
+    return arrayIndex.x < 8 && arrayIndex.x >= 0 && arrayIndex.y < 8 && arrayIndex.y >= 0;
+}
+Vector2D Board::WorldPosToBoard(Vector2D worldPos)
+{
+    int x = (((worldPos.x - startingPosX) / tileSize) - 1);
+    int y = (((worldPos.y - startingPosY) / tileSize) - 1);
+    return Vector2D(x,y);
+}
+Vector2D Board::BoardToWorldPos(Vector2D boardPos) 
+{
+    return Vector2D(startingPosX + (tileSize * (1 + boardPos.x)), startingPosY + (tileSize * (1 + boardPos.y)));
+}
+bool Board::CanMoveToTile(Tile* tile, PieceColor color)
+{
+    return tile->piece->GetColor() != color;
+}
+bool Board::IsTileEmpty(Tile* tile)
+{
+    return tile->piece->GetColor() == NONE;
+}
+bool Board::IsTileAlly(Tile* tile, PieceColor color)
+{
+    return tile->piece->GetColor() == color;
+}
+bool Board::IsTileEnemy(Tile* tile, PieceColor color)
+{
+    return tile->piece->GetColor() == -color;
+}
+void Board::TrySelectPiece(Vector2D boardIndex)
+{
+    if (boardTiles[boardIndex]->type == PieceType::None)
+        return;
+    if (boardTiles[boardIndex]->piece->GetColor() != currentPlayer->playerColor)
+        return;
+    if (currentPlayer->jaque)
+    {
+        pickedPieceTile = boardTiles[boardIndex];
+        ResetPosibleMoves();
+        PosibleMoves(pickedPieceTile->piece->GetPosiblesMoves(boardIndex, *this, currentPlayer->playerColor));
+        int size = pickedPieceTile->piece->posibleMoves.size();
+        if (size <= 0)
+            pickedPieceTile = nullptr;
+    }
+    else
+    {
+        pickedPieceTile = boardTiles[boardIndex];
+        ResetPosibleMoves();
+        PosibleMoves(pickedPieceTile->piece->GetPosiblesMoves(boardIndex, *this, currentPlayer->playerColor));
+        int size = pickedPieceTile->piece->posibleMoves.size();
+        if (size <= 0)
+            pickedPieceTile = nullptr;
     }
 }
 
 
-void Board::TryReleasePiece(sf::Vector2f worldPos)
+void Board::TryReleasePiece(Vector2D releaseBoardIndex)
 {
-
-    for (int i = 0; i < 8; i++)
+    if (boardTiles[Vector2D(releaseBoardIndex)]->piece->GetColor() != currentPlayer->playerColor)
     {
-        for (int e = 0; e < 8; e++)
+        if (pickedPieceTile == nullptr)
+            return;
+        if (pickedPieceTile->piece->CheckMove(releaseBoardIndex))
         {
+            Vector2D boardPos = WorldPosToBoard(pickedPieceTile->piece->GetPos());
+            Vector2D pixelPos = pickedPieceTile->piece->GetPos();
+            pickedPieceTile->piece->alreadyMoved = true;
+
+            pickedPieceTile->piece->SetPosition(boardTiles[releaseBoardIndex]->pos);
+            boardTiles[releaseBoardIndex]->piece = pickedPieceTile->piece;
+            boardTiles[releaseBoardIndex]->type = pickedPieceTile->type;
 
 
-            if (boardTiles[Vector2D(i, e)]->piece->GetColor() != currentPlayer->playerColor)
-            {
-                if (boardTiles[Vector2D(i, e)]->piece->CheckBounds(worldPos.x, worldPos.y))
-                {
-                    if (pressedTile == nullptr)
-                        return;
-                    if (pressedTile->piece->CheckMove(Vector2D(i, e)))
-                    {
-                        Vector2D boardPos = pressedTile->boardPos;
-                        Vector2D pixelPos = pressedTile->piece->GetPos();
-                        pressedTile->piece->alreadyMoved = true;
+            boardTiles[boardPos]->piece = GetEmptyPiece(pixelPos);
+            boardTiles[boardPos]->type = None;
 
-                        pressedTile->piece->SetPosition(boardTiles[Vector2D(i, e)]->pos);
-                        boardTiles[Vector2D(i, e)]->piece = pressedTile->piece;
-                        boardTiles[Vector2D(i, e)]->type = pressedTile->type;
+            pickedPieceTile = nullptr;
+            ResetPosibleMoves();
 
+            //Mandar socket a todos los player
 
-                        boardTiles[boardPos]->piece = GetEmptyPiece(pixelPos);
-                        boardTiles[boardPos]->type = None;
+            currentPlayer->jaque = false;
+            currentPlayer->jaqueMate = false;
 
-                        pressedTile = nullptr;
-                        ResetPosibleMoves();
+            currentPlayer = (currentPlayer->playerColor == WHITE) ? players[1] : players[0];
 
-                        //Mandar socket a todos los player
-
-
-                        CheckJaque((PieceColor) (-(int)currentPlayer->playerColor));
-
-                        currentPlayer->jaque = false;
-                        currentPlayer->jaqueMate = false;
-
-                        currentPlayer = (currentPlayer->playerColor == WHITE) ? players[1] : players[0];
-
-                        CheckJaque((PieceColor)(-(int)currentPlayer->playerColor));
-
-                    }
-
-
-                }
-            }
+            CheckJaque(currentPlayer->playerColor);
         }
     }
 }
-
 
 void Board::run()
 {
@@ -331,17 +374,12 @@ void Board::run()
             }
         }
 
-
         window.display();
 
         sf::Event event;
 
         while (window.pollEvent(event))
         {
-            sf::Vector2i clickPixelPos = { event.mouseButton.x, event.mouseButton.y };
-            sf::Vector2f worldPos = window.mapPixelToCoords(clickPixelPos);
-
-
             switch (event.type)
             {
             case sf::Event::Closed:
@@ -351,25 +389,18 @@ void Board::run()
 
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    TrySelectPiece(worldPos);
+                    sf::Vector2i clickPixelPos = { event.mouseButton.x, event.mouseButton.y };
+                    Vector2D mouseBoardIndex = WorldPosToBoard(Vector2D(clickPixelPos.x, clickPixelPos.y));
 
-                    if (pressedTile != nullptr)
-                        TryReleasePiece(worldPos);
+                    TrySelectPiece(mouseBoardIndex);
 
-
-                  
-
-
-          
+                    if (pickedPieceTile != nullptr)
+                        TryReleasePiece(mouseBoardIndex);
                 }
-
                 break;
             case sf::Event::MouseButtonReleased:
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-
-
-
                 }
                 break;
             case sf::Event::MouseWheelScrolled:
@@ -382,15 +413,3 @@ void Board::run()
     }
 }
 
-Casilla::Casilla(Vector2D pos, Piece* piece, PieceType type, Vector2D boardPos)
-{
-    this->pos = pos;
-
-    marca = new sf::RectangleShape(sf::Vector2f(64, 64));
-    marca->setFillColor(sf::Color(0, 255, 0, 0)); 
-    marca->setPosition(pos.x,pos.y);
-
-    this->piece = piece;
-    this->type = type;
-    this->boardPos = boardPos;
-}

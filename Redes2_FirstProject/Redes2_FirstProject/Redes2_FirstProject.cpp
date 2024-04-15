@@ -27,7 +27,7 @@ int main()
     char mode;
     Board board;
     RoomManager manager;
-    //board.run();
+    board.run();
 
 
     do
