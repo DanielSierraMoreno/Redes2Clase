@@ -24,7 +24,7 @@ void TcpSocket::Receive()
 		}
 		_onSocketDisconnectList.clear();
 
-		_onSocketDisconnectMutex.lock();
+		_onSocketDisconnectMutex.unlock();
 		break;
 	case sf::Socket::Partial:
 	case sf::Socket::NotReady:

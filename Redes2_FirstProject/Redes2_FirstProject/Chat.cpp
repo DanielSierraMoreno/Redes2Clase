@@ -4,7 +4,7 @@
 #include "ConsoleControl.h"
 
 
-void Chat::ShowMessage(std::string message)
+void Lobby::ShowMessage(std::string message)
 {
 	_messageMutex.lock();
 	_messages.push_back(message);
@@ -15,7 +15,7 @@ void Chat::ShowMessage(std::string message)
 	ConsoleControl::UnlockMutex();
 }
 
-void Chat::ShowWarning(std::string message)
+void Lobby::ShowWarning(std::string message)
 {
 	ConsoleControl::LockMutex();
 	ConsoleControl::SetColor(ConsoleControl::YELLOW);
@@ -24,7 +24,7 @@ void Chat::ShowWarning(std::string message)
 	ConsoleControl::UnlockMutex();
 }
 
-void Chat::ShowError(std::string message)
+void Lobby::ShowError(std::string message)
 {
 	ConsoleControl::LockMutex();
 	ConsoleControl::SetColor(ConsoleControl::RED);
@@ -33,7 +33,7 @@ void Chat::ShowError(std::string message)
 	ConsoleControl::UnlockMutex();
 }
 
-void Chat::ListenClientsConnections(unsigned short port)
+void Lobby::ListenClientsConnections(unsigned short port)
 {
 	sf::TcpListener listener;
 
@@ -53,7 +53,7 @@ void Chat::ListenClientsConnections(unsigned short port)
 		switch (status)
 		{
 		case sf::Socket::Done: {
-			std::thread clientThread = std::thread(&Chat::OnClientEnter, this,client);
+			std::thread clientThread = std::thread(&Lobby::OnClientEnter, this,client);
 			clientThread.detach();
 			break;
 		}
@@ -72,7 +72,7 @@ void Chat::ListenClientsConnections(unsigned short port)
 
 }
 
-void Chat::ConnectToServer(std::string ip, unsigned short port)
+void Lobby::ConnectToServer(std::string ip, unsigned short port)
 {
 	sf::TcpSocket* socket = new sf::TcpSocket();
 	sf::Socket::Status status = socket->connect(ip, port);
@@ -85,14 +85,14 @@ void Chat::ConnectToServer(std::string ip, unsigned short port)
 	_socketMutex.unlock();
 	ShowWarning("Connected to server with ip: " + ip);
 
-	std::thread keyboardThread = std::thread(&Chat::ListenKeyboardToSendMessages, this);
+	std::thread keyboardThread = std::thread(&Lobby::ListenKeyboardToSendMessages, this);
 	keyboardThread.detach();
 	
-	std::thread listenThread = std::thread(&Chat::ListenMessages, this, socket);
+	std::thread listenThread = std::thread(&Lobby::ListenMessages, this, socket);
 	listenThread.detach();
 }
 
-void Chat::OnClientEnter(sf::TcpSocket* client)
+void Lobby::OnClientEnter(sf::TcpSocket* client)
 {
 	_socketMutex.lock();
 	_sockets.push_back(client);
@@ -103,9 +103,18 @@ void Chat::OnClientEnter(sf::TcpSocket* client)
 	ListenMessages(client);
 }
 
-void Chat::ListenMessages(sf::TcpSocket* socket)
+void Lobby::OnClientCreateRoom(sf::TcpSocket* client)
 {
-	while (true != false)
+	_socketMutex.lock();
+	_sockets.push_back(client);
+	_socketMutex.unlock();
+
+	ShowWarning("Client accepted IP:" + client->getRemoteAddress().toString());
+}
+
+void Lobby::ListenMessages(sf::TcpSocket* socket)
+{
+	while (true != false && !false)
 	{
 		char data[100];
 		std::size_t received;
@@ -131,7 +140,7 @@ void Chat::ListenMessages(sf::TcpSocket* socket)
 	}
 }
 
-void Chat::ListenKeyboardToSendMessages()
+void Lobby::ListenKeyboardToSendMessages()
 {
 	std::string message = "";
 
@@ -160,23 +169,23 @@ void Chat::ListenKeyboardToSendMessages()
 	}
 }
 
-Chat* Chat::Server(unsigned short port)
+Lobby* Lobby::Server(unsigned short port)
 {
-	Chat* chat = new Chat();
+	Lobby* chat = new Lobby();
 	chat->_serverAddress = sf::IpAddress::getLocalAddress();
 	chat->_isServer = true;
 
-	std::thread listenerThread = std::thread(&Chat::ListenClientsConnections, chat, port);
+	std::thread listenerThread = std::thread(&Lobby::ListenClientsConnections, chat, port);
 	listenerThread.detach();
 
 	//Listen keyboard
-	std::thread keyboardThread = std::thread(&Chat::ListenKeyboardToSendMessages, chat);
+	std::thread keyboardThread = std::thread(&Lobby::ListenKeyboardToSendMessages, chat);
 	keyboardThread.detach();
 
 	return chat;
 }
 
-void Chat::SendMessage(std::string message)
+void Lobby::SendMessage(std::string message)
 {
 
 	_socketMutex.lock();
@@ -188,9 +197,9 @@ void Chat::SendMessage(std::string message)
 	_socketMutex.unlock();
 }
 
-Chat* Chat::Client(std::string ip, unsigned short port)
+Lobby* Lobby::Client(std::string ip, unsigned short port)
 {
-	Chat* chat = new Chat();
+	Lobby* chat = new Lobby();
 	chat->_serverAddress = sf::IpAddress(ip);
 
 	chat->ConnectToServer(ip, port);
@@ -198,7 +207,7 @@ Chat* Chat::Client(std::string ip, unsigned short port)
 	return chat;
 }
 
-bool Chat::CheckError(sf::Socket::Status STATUS, std::string error)
+bool Lobby::CheckError(sf::Socket::Status STATUS, std::string error)
 {
 	if (STATUS != sf::Socket::Done)
 	{

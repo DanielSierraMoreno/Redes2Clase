@@ -4,7 +4,7 @@
 #include <SFML/Network.hpp>
 #include <vector>
 #include <list>
-class Chat
+class Lobby
 {
 private:
 	bool _isServer = false;
@@ -17,7 +17,7 @@ private:
 	std::vector<std::string> _messages;
 	std::mutex _messageMutex;
 
-	Chat() {}
+	Lobby() {}
 	void ShowMessage(std::string message);
 	void ShowWarning(std::string message);
 	void ShowError(std::string message);
@@ -27,14 +27,15 @@ private:
 
 
 	void OnClientEnter(sf::TcpSocket* client);
+	void OnClientCreateRoom(sf::TcpSocket* client);
 	void ListenMessages(sf::TcpSocket* socket);
 	void ListenKeyboardToSendMessages();
 	void SendMessage(std::string message);
 	bool CheckError(sf::Socket::Status STATUS, std::string error);
 
 public:
-	static Chat* Server(unsigned short port);
-	static Chat* Client(std::string ip, unsigned short port);
+	static Lobby* Server(unsigned short port);
+	static Lobby* Client(std::string ip, unsigned short port);
 };
 
 	

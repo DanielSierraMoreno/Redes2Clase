@@ -11,59 +11,32 @@
 #include "SocketsManager.h"
 #include "Window.h"
 #include "RoomManager.h"
-
+#include "MainScreen.h"
+#include "ScreenManager.h"
 void RunClient();
 void RunServer();
 void RunWindows();
 
-unsigned short port = 3001;
 
-enum PackagesIds: Packet::PacketKey { Message = 0};
 
 int main()
 {
-
     sf::TcpSocket socket;
     char mode;
     Board board;
     RoomManager manager;
-    board.run();
 
-
-    do
-    {
-        std::cout << "Enter mode (S for Server, C for Client): ";
-        mode = ConsoleControl::WaitForReadNextChar();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiar el buffer del teclado
-
-    } while (mode != 's' && mode != 'S' && mode != 'C' && mode != 'c');
-
-    switch (mode)
-    {
-    case 'S':
-    case 's':
-        RunServer(); //Iniciem server
-        break;
-    case 'C':
-    case 'c':
-        //manager.Init();
-        RunClient(); //Iniciem Client
-
-        break;
-    default:
-        break;
-    }
-
+    MainScreen* mainScreen = new MainScreen(800, 800, "MainScreen");
+    ScreenManager::getInstance().AddScreen(mainScreen);
 
     while (true)
     {
-
+        ScreenManager::getInstance().UpdateAllScreens();
     }
-
 }
 void RunClient() 
 {
-    std::cout << "Client";
+   /* std::cout << "Client";
 
     std::cout << std::endl << "Set server IP --> ";
 
@@ -107,90 +80,11 @@ void RunClient()
     {
         SM->StartLoop(); //Si el podem conectar começarem el bucle d'execucio
     }
+    */
 }
 
 
 void RunServer()
 {
-    //std::cout << "Server";
-
-    Chat* chat = Chat::Server(port);
-    return;
-    SocketsManager* SM = new SocketsManager([](TcpSocket* socket)//Al crear un SocketsManager hem de passar una funcio lambda al constructor
-        {                                                         //que es guardara a una variable privada de la clase
-                                                                  //per tal que quan es conecti un TcpSocket pasarlo com a parametre. 
-                                                                  //(veure SocketsManager::AddSocket(TcpSocket* socket) per entendreho)
-                                                                  //Per tant, tots els sockets que conectem implementaran la funcionalitat seguent:
-
-            std::cout << std::endl << "Socket connected: " << socket->getRemoteAddress().toString();
-
-            socket->Subscribe(Message, [socket](Packet packet) {
-                std::string message;
-                packet >> message;
-                std::cout << std::endl << "New Message: " << message;
-
-                std::string response = "Pues Yo Soy El Server";
-                Packet responsePacket;
-                responsePacket << response;
-
-                socket->Send(Message, responsePacket);
-            });
-            socket->SubscribeOnDisconnect([](TcpSocket* socket) {//El TcpSocket que passem com a parametre te una variable list de lambdas a executar quan es desconecti.
-                                                                 //En aquest cas passem una lambda que fa un print del TcpSocket que sha desconectat
-
-                std::cout << std::endl << "Socket disconected: " << socket->getRemoteAddress().toString();
-            });
-
-
-
-
-        });
-
-    if (SM->StartListener(port)) //Intentarem començar a escoltar amb el listener del servidor
-    {
-        sf::IpAddress ipAddress = sf::IpAddress::getLocalAddress();
-        std::cout << "Listening on Ip: " << ipAddress.toString();
-        SM->StartLoop(); //Si ho aconseguim començarem el bucle d'execucio 
-    }
-
 }
 
-
-void RunWindows()
-{
-    Window window;
-
-    Button* bt = new Button(50, 20, "resources/QG.png");
-
-    bt->onClick = []() {
-        std::cout << std::endl << "Long Live The Queen";
-        };
-
-    window.AddButton(bt);
-    window.RunWindowLoop();
-
-
-   /* sf::RenderWindow windows;
-    windows.create(sf::VideoMode(800, 600), "Chat");
-    windows.setFramerateLimit(60);
-
-    sf::Text label;
-
-    sf::Font font;
-    font.loadFromFile("Minecraft.ttf");
-
-    label.setFont(font);
-    label.setCharacterSize(16);
-    label.setFillColor(sf::Color::White);
-    label.setString("Hello World");
-    label.setOrigin(0.5, 0.5);
-
-    label.setPosition(windows.getSize().x * 0.5, windows.getSize().y * 0.5);
-
-    while (windows.isOpen())
-    {
-        windows.clear(sf::Color::Black);
-        windows.draw(label);
-        windows.display();
-    }*/
-}

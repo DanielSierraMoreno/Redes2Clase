@@ -2,22 +2,24 @@
 
 #include <SFML/Graphics.hpp>
 #include <functional>
-
 class Button: public sf::Sprite
 {
 public:
 
 	typedef std::function<void()> OnClick;
-	OnClick onClick = [](){};
+	OnClick onClick = []() {};
 
-	Button(float x, float y, std::string texturePath); //Mas tarde habra que pasarle la textura ya cargada y no el path para no cargarla 20 veces
+	Button(float x, float y,sf::Texture texture);
 
 	bool CheckBounds(unsigned int x, unsigned int y);
-
+	float GetMiddlePosX() const;
+	float GetLeftPivotX() const;
+	float GetMiddlePosY() const;
+	void AddOnClickListener(const OnClick& callback);
+	void CenterPivot();
+	void PivotCorner();
 private:
-
 	sf::Texture texture;
-
-
+	sf::Sprite sprite;
 };
 
