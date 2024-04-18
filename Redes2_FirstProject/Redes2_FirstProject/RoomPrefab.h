@@ -14,5 +14,6 @@ public:
 	Button* enterAsPlayer;
 	Button* enterAsSpectator;
 	RoomData* data;
+	void UpdatePosition(int x);
 };
 

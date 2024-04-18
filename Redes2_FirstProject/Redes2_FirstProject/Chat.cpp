@@ -78,7 +78,13 @@ void Lobby::ConnectToServer(std::string ip, unsigned short port)
 	sf::Socket::Status status = socket->connect(ip, port);
 
 	if (CheckError(status, "Error on connecto to Server"))
+	{
+		enterServer = false;
 		return;
+	}
+	enterServer = true;
+
+
 
 	_socketMutex.lock();
 	_sockets.push_back(socket);
@@ -205,6 +211,11 @@ Lobby* Lobby::Client(std::string ip, unsigned short port)
 	chat->ConnectToServer(ip, port);
 
 	return chat;
+}
+
+bool Lobby::CheckIfEnterServer()
+{
+	return enterServer;
 }
 
 bool Lobby::CheckError(sf::Socket::Status STATUS, std::string error)

@@ -6,8 +6,8 @@ class RoomData
 {
 public:
 	RoomData();
-	RoomData(std::string id, std::string name, __time32_t _timestamp);
-	std::string id;
+	RoomData(unsigned long id, std::string name, __time32_t _timestamp);
+	unsigned long id;
 	std::string name;
 	__time32_t timestamp;
 };

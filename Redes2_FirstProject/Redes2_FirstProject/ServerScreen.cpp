@@ -4,17 +4,14 @@
 
 ServerScreen::ServerScreen(int W, int H, std::string name) : Screen(W, H, name)
 {
-	startServerButton = new Button(GetMiddleScreenX(), GetMiddleScreenY(), TextureManager::getInstance().buttonTexture);
+	startServerButton = new Button(GetMiddleScreenX(), GetMiddleScreenY(), TextureManager::getInstance().buttonTexture, "Start Server",this,40);
     startServerButton->CenterPivot();
 	startServerButton->setColor(sf::Color::Red);
 	startServerButton->AddOnClickListener([this]() {
 		StartServer();
 	});
-	AddDraweable(startServerButton);
 
-	Text* text = new Text(startServerButton->GetMiddlePosX(),startServerButton->GetMiddlePosY(), "Start Server", 30);
-	text->CenterText();
-	AddDraweable(&text->text);
+
 
 
 }

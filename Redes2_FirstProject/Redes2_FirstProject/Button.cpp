@@ -1,5 +1,22 @@
 #include "Button.h"
 #include <SFML/Graphics/Texture.hpp>
+#include "Screen.h"
+
+Button::Button()
+{
+}
+Button::Button(float x, float y, sf::Texture texture, std::string textName, Screen* currentScrren, int fontSize)
+{
+	this->setPosition(x, y);
+	this->setTexture(texture);
+	currentScrren->AddDraweable(this);
+
+	name = new Text(this->GetMiddlePosX(), this->GetMiddlePosY(), textName, fontSize);
+	name->CenterText();
+
+	currentScrren->AddDraweable(&name->text);
+}
+
 Button::Button(float x, float y, sf::Texture texture)
 {
 	this->setPosition(x, y);
@@ -40,6 +57,12 @@ void Button::PivotCorner()
 {
 	sf::FloatRect bounds = getLocalBounds();
 	setOrigin(bounds.width , bounds.height); 
+}
+
+void Button::UpdatePosition(int x)
+{
+	this->setPosition(this->getPosition().x + x, this->getPosition().y);
+	name->setPosition(name->posX + x, name->posY);
 }
 
 

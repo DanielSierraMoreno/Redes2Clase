@@ -11,6 +11,7 @@ public:
 	void SetData(Lobby* data);
 	Lobby* clientData;
 	std::vector<RoomPrefab*> rooms;
+	virtual void Update() override;
 
 private:
 	InputText* newRoomName;

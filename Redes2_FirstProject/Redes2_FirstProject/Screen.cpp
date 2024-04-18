@@ -25,7 +25,10 @@ void Screen::Events()
             MouseButtonRelesedEvents(event);
             break;
         case sf::Event::MouseWheelScrolled:
-            //No hace falta
+
+
+            scroll += (event.mouseWheelScroll.delta > 0) ? 20 : -20;
+
             break;
         case sf::Event::KeyPressed:
             KeyPressedEvents(event);
@@ -63,11 +66,13 @@ void Screen::MouseButtonPressedEvents(sf::Event event)
     if (event.mouseButton.button == sf::Mouse::Left)
     {
         sf::Vector2i clickPixelPos = { event.mouseButton.x, event.mouseButton.y };
-        for (Button* button : buttons) 
+
+        for (int i = 0; i < buttons.size(); i++)
         {
-            if (button->getGlobalBounds().contains(clickPixelPos.x, clickPixelPos.y))
-                button->onClick();
+            if (buttons[i]->getGlobalBounds().contains(clickPixelPos.x, clickPixelPos.y))
+                buttons[i]->onClick();
         }
+
     }
 }
 void Screen::KeyPressedEvents(sf::Event event) 
@@ -106,6 +111,14 @@ float Screen::GetMiddleScreenX()
 bool Screen::isOpen()
 {
     return window.isOpen();
+}
+int Screen::GetScroll()
+{
+    return scroll;
+}
+void Screen::ResetScroll()
+{
+    scroll = 0;
 }
 float Screen::GetMiddleScreenY()
 {

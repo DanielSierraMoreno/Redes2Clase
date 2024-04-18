@@ -16,38 +16,53 @@ RoomPrefab::RoomPrefab(int x, int y, RoomData* _data, Screen* currentScreen)
 	sf::FloatRect bounds = background->getLocalBounds(); 
 	background->setOrigin(bounds.width / 2.0f, bounds.height / 2.0f);
 	background->setPosition(x, y);
+	background->setScale(1.25f, 1.5f);
+	currentScreen->AddDraweable(background);
 
-	name = new Text(x,y + bounds.height, data->name, 20);
+	name = new Text(x,y-150, data->name, 20);
 	name->CenterText();
 	currentScreen->AddDraweable(&name->text);
 
-	createdTime = new Text(x, y + bounds.height + 20,Utils::timestamp32ToString(_data->timestamp), 20);
+	createdTime = new Text(x, y + bounds.height - 80,Utils::timestamp32ToString(_data->timestamp), 20);
 	createdTime->CenterText();
 	currentScreen->AddDraweable(&createdTime->text);
 
 
 
-	enterAsPlayer = new Button(x,y - 100, TextureManager::getInstance().buttonTexture);
-	enterAsPlayer->PivotCorner();
-	enterAsPlayer->setScale(0.35, 0.2);
+	enterAsPlayer = new Button(x,y-65, TextureManager::getInstance().buttonTexture, "Enter As Player",currentScreen,30);
+	enterAsPlayer->CenterPivot();
+	enterAsPlayer->setScale(1.1, 0.5);
 	enterAsPlayer->setColor(sf::Color::Red);
 	enterAsPlayer->AddOnClickListener([this]() {
 		});
-	currentScreen->AddDraweable(enterAsPlayer);
 
-	Text* text1 = new Text(enterAsPlayer->GetMiddlePosX() - 38, enterAsPlayer->GetMiddlePosY() - 25, "Connect", 20);
-	text1->CenterText();
-	currentScreen->AddDraweable(&text1->text);
 
-	enterAsSpectator = new Button(x, y -150, TextureManager::getInstance().buttonTexture);
-	enterAsSpectator->PivotCorner();
-	enterAsSpectator->setScale(0.35, 0.2);
+
+	enterAsSpectator = new Button(x, y +65, TextureManager::getInstance().buttonTexture, "Enter As Spectator",currentScreen,30);
+	enterAsSpectator->CenterPivot();
+	enterAsSpectator->setScale(1.1, 0.5);
 	enterAsSpectator->setColor(sf::Color::Red);
 	enterAsSpectator->AddOnClickListener([this]() {
 		});
-	currentScreen->AddDraweable(enterAsSpectator);
 
-	Text* text2 = new Text(enterAsSpectator->GetMiddlePosX() - 38, enterAsSpectator->GetMiddlePosY() - 25, "Connect", 20);
-	text2->CenterText();
-	currentScreen->AddDraweable(&text2->text);
+
+}
+
+void RoomPrefab::UpdatePosition(int x)
+{
+
+	background->setPosition(background->getPosition().x+x, background->getPosition().y);
+
+	name->setPosition(name->posX + x, name->posY);
+
+	createdTime->setPosition(createdTime->posX + x, createdTime->posY);
+
+
+
+	enterAsPlayer->UpdatePosition(x);
+
+
+
+	enterAsSpectator->UpdatePosition(x);
+
 }

@@ -11,22 +11,20 @@ ClientScreen::ClientScreen(int W, int H, std::string name) : Screen(W, H, name)
 
 	ipInput = new InputText(200, 150, "Insert IP: ", this);
 	ipInput->AddDraweable();
-
+	ipInput->stringContent = "192.168.1.144";
 	portInput = new InputText(200, 200, "Insert PORT: ", this);
 	portInput->AddDraweable();
+	portInput->stringContent = "3001";
+	Button* startButton = new Button(W - 50, H - 25, TextureManager::getInstance().buttonTexture, "Connect",this,20);
+	startButton->CenterPivot();
 
-	Button* startButton = new Button(W - 5, H - 5, TextureManager::getInstance().buttonTexture);
-	startButton->PivotCorner();
 	startButton->setScale(0.35, 0.2);
 	startButton->setColor(sf::Color::Red);
 	startButton->AddOnClickListener([this]() {
 		ConnectToServer();
 		});
-	AddDraweable(startButton);
 
-	Text* textb = new Text(startButton->GetMiddlePosX() - 38, startButton->GetMiddlePosY() - 25, "Connect", 20);
-	textb->CenterText();
-	AddDraweable(&textb->text);
+
 }
 
 void ClientScreen::ConnectToServer()
@@ -36,6 +34,9 @@ void ClientScreen::ConnectToServer()
 	port = std::stoi(portInput->stringContent);
 
 	Lobby* client = Lobby::Client(ip,port);
+	if (!client->CheckIfEnterServer())
+		return;
+
 	RoomSelectionScreen* screen = new RoomSelectionScreen(800, 600, "Lobby");
 	ScreenManager::getInstance().AddScreen(screen);
 

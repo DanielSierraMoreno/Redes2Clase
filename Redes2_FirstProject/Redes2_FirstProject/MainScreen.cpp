@@ -6,29 +6,23 @@
 #include "ScreenManager.h"
 MainScreen::MainScreen(int W, int H, std::string name) : Screen(W,H,name)
 {
-	startServerButton = new Button(GetMiddleScreenX() + 200, GetMiddleScreenY(), TextureManager::getInstance().buttonTexture);
+	startServerButton = new Button(GetMiddleScreenX() + 200, GetMiddleScreenY(), TextureManager::getInstance().buttonTexture,"Server",this,40);
 	startServerButton->CenterPivot();
 	startServerButton->setColor(sf::Color::Magenta);
 	startServerButton->AddOnClickListener([this]() {
 		OpenServerScreen();
 		});
-	AddDraweable(startServerButton);
 
-	Text* text = new Text(startServerButton->GetMiddlePosX(), startServerButton->GetMiddlePosY(), "Server", 30);
-	text->CenterText();
-	AddDraweable(&text->text);
 
-	startClientButton = new Button(GetMiddleScreenX() - 200, GetMiddleScreenY(), TextureManager::getInstance().buttonTexture);
+
+	startClientButton = new Button(GetMiddleScreenX() - 200, GetMiddleScreenY(), TextureManager::getInstance().buttonTexture, "Client",this,40);
 	startClientButton->CenterPivot();
 	startClientButton->setColor(sf::Color::Yellow);
 	startClientButton->AddOnClickListener([this]() {
 		OpenClientScreen();
 		});
-	AddDraweable(startClientButton);
 
-	Text* text2 = new Text(startClientButton->GetMiddlePosX(), startClientButton->GetMiddlePosY(), "Client", 30);
-	text2->CenterText();
-	AddDraweable(&text2->text);
+
 
 }
 

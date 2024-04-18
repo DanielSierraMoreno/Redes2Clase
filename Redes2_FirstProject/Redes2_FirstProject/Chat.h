@@ -4,6 +4,8 @@
 #include <SFML/Network.hpp>
 #include <vector>
 #include <list>
+#include "RoomData.h"
+
 class Lobby
 {
 private:
@@ -17,6 +19,10 @@ private:
 	std::vector<std::string> _messages;
 	std::mutex _messageMutex;
 
+	std::vector<RoomData> rooms;
+
+
+	bool enterServer = false;
 	Lobby() {}
 	void ShowMessage(std::string message);
 	void ShowWarning(std::string message);
@@ -36,6 +42,7 @@ private:
 public:
 	static Lobby* Server(unsigned short port);
 	static Lobby* Client(std::string ip, unsigned short port);
+	bool CheckIfEnterServer();
 };
 
 	
