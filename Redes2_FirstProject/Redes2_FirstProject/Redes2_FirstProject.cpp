@@ -24,6 +24,7 @@ int main()
     sf::TcpSocket socket;
     char mode;
     Board board;
+
     RoomManager manager;
 
     MainScreen* mainScreen = new MainScreen(800, 800, "MainScreen");
@@ -34,6 +35,7 @@ int main()
         ScreenManager::getInstance().UpdateAllScreens();
     }
 }
+
 void RunClient() 
 {
    /* std::cout << "Client";

@@ -1,4 +1,5 @@
 #include "SocketsManager.h"
+#include <iostream>
 
 SocketsManager::SocketsManager(OnSocketConnected onSocketConnected)
 {
@@ -85,6 +86,8 @@ void SocketsManager::SelectorLoop() //Bucle que revisa el selector
 	{
 		if (_selector.Wait()) //Si el selector te algun TcpSocket o TcpListener amb un informacio a rebre
 		{
+			std::cout << "In Selector" << std::endl;
+
 			CheckListener(); //Revisar si es el listener qui ha de rebre info
 
 			CheckSockets(); //Revisar si es algun dels sockets qui ha de rebre info

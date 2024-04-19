@@ -6,7 +6,7 @@ bool SocketSelect::Wait()
 	bool ready = wait();
 	_mutex.unlock();
 
-	return false;
+	return ready;
 }
 
 bool SocketSelect::IsReady(TcpListener& listener)
