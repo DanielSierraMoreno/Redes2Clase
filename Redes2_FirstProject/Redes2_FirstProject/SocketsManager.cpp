@@ -6,6 +6,8 @@ SocketsManager::SocketsManager(OnSocketConnected onSocketConnected)
 
 }
 
+
+
 SocketsManager::~SocketsManager()
 {
 	delete _listener;
@@ -88,11 +90,9 @@ void SocketsManager::SelectorLoop() //Bucle que revisa el selector
 			CheckSockets(); //Revisar si es algun dels sockets qui ha de rebre info
 
 		}
-
 		_isRunningMutex.lock();
 		 isRunning = _isRunning;
 		_isRunningMutex.unlock();
-
 	}
 
 }
@@ -137,18 +137,15 @@ void SocketsManager::AddSocket(TcpSocket* socket)
 {
 	_socketsMutex.lock();
 
+	playersIdMutex.lock();
+	int newPlayerId = players;
+	players++;
+	playersIdMutex.unlock();
+
 	_sockets.push_back(socket); //S'afegeix el TCPSocket a la llista de TCPSocket
 	_selector.Add(*socket); //S'afegeix el TCPSocket a la llista interna que te SocketSelect
 
-
-
-
-
-	_OnSocketConnected(socket); //S'executa la lambda que hem guardat al cosntrcutor passant el nou socket conectat
-
-
-
-
+	_OnSocketConnected(newPlayerId,socket); //S'executa la lambda que hem guardat al cosntrcutor passant el nou socket conectat
 
 	socket->SubscribeOnDisconnect([this](TcpSocket* socket) { //S'afegeix una lamda mes a la llista de lambdas que s'executen al desoncetar el TCPSocket
 		RemoveSocketAsync(socket);

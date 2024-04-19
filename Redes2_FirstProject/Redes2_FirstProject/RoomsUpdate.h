@@ -1,10 +1,19 @@
 #pragma once
 #include <vector>
 #include "RoomData.h"
+#include "Codable.h"
 
-class RoomsUpdate
-{
+class RoomsUpdateData : public ICodable {
 public:
-	std::vector<RoomData> rooms;
-};
+	RoomsUpdateData(Packet& p) {
+		Code(p);
+	}
+	void Code(sf::Packet& packet) override {
+		packet /*<< packetKey*/ << rooms;
+	}
+	void Decode(sf::Packet& packet) override {
+		packet >> rooms;
+	}
+	CPVector<RoomData> rooms;
 
+};

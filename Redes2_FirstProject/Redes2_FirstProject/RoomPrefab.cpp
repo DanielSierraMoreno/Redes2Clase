@@ -23,7 +23,7 @@ RoomPrefab::RoomPrefab(int x, int y, RoomData* _data, Screen* currentScreen)
 	name->CenterText();
 	currentScreen->AddDraweable(&name->text);
 
-	createdTime = new Text(x, y + bounds.height - 80,Utils::timestamp32ToString(_data->timestamp), 20);
+	createdTime = new Text(x, y + bounds.height - 80,_data->timestamp, 20);
 	createdTime->CenterText();
 	currentScreen->AddDraweable(&createdTime->text);
 

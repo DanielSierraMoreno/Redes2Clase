@@ -84,7 +84,7 @@
     <ClCompile Include="Castle.cpp">
       <Filter>Source Files\Other</Filter>
     </ClCompile>
-    <ClCompile Include="Chat.cpp">
+    <ClCompile Include="Lobby.cpp">
       <Filter>Source Files\Other</Filter>
     </ClCompile>
     <ClCompile Include="ConsoleControl.cpp">
@@ -159,9 +159,12 @@
     <ClCompile Include="TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RoomRequestData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Chat.h">
+    <ClInclude Include="Lobby.h">
       <Filter>ConectionAbstraction</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleControl.h">
@@ -282,6 +285,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomRequestData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Codable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginRequestData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

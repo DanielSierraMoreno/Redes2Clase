@@ -2,13 +2,21 @@
 #include <string>
 #include <vector>
 #include "Address.h"
-class RoomData
+#include "Codable.h"
+class RoomData : ICodable
 {
 public:
-	RoomData();
-	RoomData(unsigned long id, std::string name, __time32_t _timestamp);
-	unsigned long id;
+	RoomData() = default;
+	RoomData(sf::Uint64 id, std::string name, std::string _timestamp);
+	sf::Uint64 id;
 	std::string name;
-	__time32_t timestamp;
+	std::string timestamp;
+
+	void Code(sf::Packet& packet) override {
+		packet << id << timestamp << name;
+	}
+	void Decode(sf::Packet& packet) override {
+		packet >> id >> timestamp >> name;
+	}
 };
 

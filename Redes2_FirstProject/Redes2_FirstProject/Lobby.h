@@ -5,22 +5,29 @@
 #include <vector>
 #include <list>
 #include "RoomData.h"
+#include "SocketsManager.h"
+#include "RoomsUpdate.h"
+
+enum PackagesIds : Packet::PacketKey { RoomsUpdate = 0, OnLogin = 1};
 
 class Lobby
 {
 private:
+	unsigned short port;
 	bool _isServer = false;
-	std::mutex _isServerMutex;
-	std::list<sf::TcpSocket*> _sockets;
-	std::mutex _socketMutex;
 
 	sf::IpAddress _serverAddress;
 
 	std::vector<std::string> _messages;
 	std::mutex _messageMutex;
-
 	std::vector<RoomData> rooms;
 
+	SocketsManager* SM;
+	std::mutex* lobbyMutex;
+	RoomsUpdateData* roomsData;
+	std::string PlayerName;
+
+	std::map<int, std::pair<std::string, TcpSocket*>> playersInLobby;
 
 	bool enterServer = false;
 	Lobby() {}
@@ -28,20 +35,14 @@ private:
 	void ShowWarning(std::string message);
 	void ShowError(std::string message);
 
-	void ListenClientsConnections(unsigned short port);
-	void ConnectToServer(std::string ip, unsigned short port);
+	void ConnectToServer(std::string name,std::string ip, unsigned short port);
+	void CreateServer();
 
-
-	void OnClientEnter(sf::TcpSocket* client);
-	void OnClientCreateRoom(sf::TcpSocket* client);
-	void ListenMessages(sf::TcpSocket* socket);
-	void ListenKeyboardToSendMessages();
-	void SendMessage(std::string message);
 	bool CheckError(sf::Socket::Status STATUS, std::string error);
 
 public:
-	static Lobby* Server(unsigned short port);
-	static Lobby* Client(std::string ip, unsigned short port);
+	static Lobby* Server(unsigned short _port);
+	static Lobby* Client(std::string name,std::string ip, unsigned short port);
 	bool CheckIfEnterServer();
 };
 

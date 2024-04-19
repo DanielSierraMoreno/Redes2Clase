@@ -144,7 +144,7 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Castle.cpp" />
-    <ClCompile Include="Chat.cpp" />
+    <ClCompile Include="Lobby.cpp" />
     <ClCompile Include="ClientScreen.cpp" />
     <ClCompile Include="ConsoleControl.cpp" />
     <ClCompile Include="CreateRoomRequest.cpp" />
@@ -155,6 +155,7 @@
     <ClCompile Include="Knight.cpp" />
     <ClCompile Include="MainScreen.cpp" />
     <ClCompile Include="RoomPrefab.cpp" />
+    <ClCompile Include="RoomRequestData.cpp" />
     <ClCompile Include="RoomSelectionScreen.cpp" />
     <ClCompile Include="ScreenManager.cpp" />
     <ClCompile Include="ServerScreen.cpp" />
@@ -187,8 +188,9 @@
     <ClInclude Include="Board.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Castle.h" />
-    <ClInclude Include="Chat.h" />
+    <ClInclude Include="Lobby.h" />
     <ClInclude Include="ClientScreen.h" />
+    <ClInclude Include="Codable.h" />
     <ClInclude Include="ConsoleControl.h" />
     <ClInclude Include="CreateRoomRequest.h" />
     <ClInclude Include="CreateRoomResponse.h" />
@@ -196,8 +198,10 @@
     <ClInclude Include="InputText.h" />
     <ClInclude Include="King.h" />
     <ClInclude Include="Knight.h" />
+    <ClInclude Include="LoginRequestData.h" />
     <ClInclude Include="MainScreen.h" />
     <ClInclude Include="RoomPrefab.h" />
+    <ClInclude Include="RoomRequestData.h" />
     <ClInclude Include="RoomSelectionScreen.h" />
     <ClInclude Include="ScreenManager.h" />
     <ClInclude Include="ServerScreen.h" />

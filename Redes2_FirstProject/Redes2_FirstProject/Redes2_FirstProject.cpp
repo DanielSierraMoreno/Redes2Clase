@@ -4,7 +4,7 @@
 #include <string>
 #include "ConsoleControl.h"
 #include <SFML/Network.hpp>
-#include "Chat.h"
+#include "lobby.h"
 #include <SFML/Graphics.hpp>
 #include "Board.h"
 

@@ -4,7 +4,6 @@
 #include "SFML/Network.hpp"
 #include "SocketsManager.h"
 
-enum PackagesIds : Packet::PacketKey { Message = 0 };
 
 class ServerScreen : public Screen
 {

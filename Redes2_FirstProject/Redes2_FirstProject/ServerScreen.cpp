@@ -1,6 +1,6 @@
 #include "ServerScreen.h"
 #include "Text.h";
-#include "Chat.h"
+#include "lobby.h"
 
 ServerScreen::ServerScreen(int W, int H, std::string name) : Screen(W, H, name)
 {

@@ -1,6 +1,7 @@
 #include "RoomSelectionScreen.h"
 #include "time.h";
 #include <thread>
+#include "Utils.h"
 
 RoomSelectionScreen::RoomSelectionScreen(int W, int H, std::string name) : Screen(W,H,name)
 {
@@ -32,15 +33,10 @@ void RoomSelectionScreen::CreateRoom()
 		x = rooms[rooms.size()-1]->background->getPosition().x + 300;
 	}
 
-	RoomData* roomData = new RoomData((int)rooms.size(), newRoomName->stringContent, timestamp);
+	RoomData* roomData = new RoomData((int)rooms.size(), newRoomName->stringContent, Utils::timestamp32ToString(timestamp));
 
 	RoomPrefab* prefab = new RoomPrefab(x, 300, roomData, this);
 	rooms.push_back(prefab);
-
-
-	
-
-
 
 
 	newRoomName->stringContent = "";

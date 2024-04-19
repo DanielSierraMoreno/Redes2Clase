@@ -8,7 +8,7 @@
 class SocketsManager
 {
 public:
-	typedef std::function<void(TcpSocket* socket)> OnSocketConnected;
+	typedef std::function<void(int,TcpSocket* socket)> OnSocketConnected;
 
 	SocketsManager(OnSocketConnected onSocketConnected);
 	~SocketsManager();
@@ -26,7 +26,8 @@ private:
 	SocketSelect _selector;
 
 	TcpListener* _listener;
-	std::mutex _listenerMutex;
+	std::mutex _listenerMutex, playersIdMutex;
+	int players;
 
 	std::list<TcpSocket*> _sockets;
 	std::mutex _socketsMutex;

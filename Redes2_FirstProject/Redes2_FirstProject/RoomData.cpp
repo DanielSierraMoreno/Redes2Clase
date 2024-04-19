@@ -1,6 +1,6 @@
 #include "RoomData.h"
 
-RoomData::RoomData(unsigned long _id, std::string _name, __time32_t _timestamp)
+RoomData::RoomData(sf::Uint64 _id, std::string _name, std::string _timestamp)
 {
 	id = _id;
 	name = _name;
