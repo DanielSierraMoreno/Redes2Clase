@@ -15,5 +15,4 @@ public:
 		packet >> rooms;
 	}
 	CPVector<RoomData> rooms;
-
 };

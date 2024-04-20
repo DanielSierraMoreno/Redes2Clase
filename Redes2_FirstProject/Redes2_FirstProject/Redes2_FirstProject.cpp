@@ -30,6 +30,8 @@ int main()
     MainScreen* mainScreen = new MainScreen(800, 800, "MainScreen");
     ScreenManager::getInstance().AddScreen(mainScreen);
 
+    //board.run();
+
     while (true)
     {
         ScreenManager::getInstance().UpdateAllScreens();

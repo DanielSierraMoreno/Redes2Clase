@@ -3,10 +3,13 @@
 #include <vector>
 #include "Address.h"
 #include "Codable.h"
-class RoomData : ICodable
+class RoomData : public ICodable
 {
 public:
 	RoomData() = default;
+	RoomData(Packet & p) {
+		Decode(p);
+	}
 	RoomData(sf::Uint64 id, std::string name, std::string _timestamp);
 	sf::Uint64 id;
 	std::string name;

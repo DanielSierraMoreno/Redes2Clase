@@ -8,7 +8,7 @@
 #include "SocketsManager.h"
 #include "RoomsUpdate.h"
 
-enum PackagesIds : Packet::PacketKey { RoomsUpdate = 0, OnLogin = 1};
+enum PackagesIds : Packet::PacketKey { RoomsUpdate = 0, OnLogin = 1, CreateRoomRequest = 2, CreateRoomResponse = 3};
 
 class Lobby
 {
@@ -20,10 +20,9 @@ private:
 
 	std::vector<std::string> _messages;
 	std::mutex _messageMutex;
-	std::vector<RoomData> rooms;
 
 	SocketsManager* SM;
-	std::mutex* lobbyMutex;
+	std::mutex* lobbyMutex,playersMutex;
 	RoomsUpdateData* roomsData;
 	std::string PlayerName;
 
@@ -44,6 +43,10 @@ public:
 	static Lobby* Server(unsigned short _port);
 	static Lobby* Client(std::string name,std::string ip, unsigned short port);
 	bool CheckIfEnterServer();
+	TcpSocket* serverSocket;
+	CPVector<RoomData> GetRoomsData();
+
+
 };
 
 	

@@ -23,8 +23,6 @@ ClientScreen::ClientScreen(int W, int H, std::string name) : Screen(W, H, name)
 	startButton->AddOnClickListener([this]() {
 		ConnectToServer();
 		});
-
-
 }
 
 void ClientScreen::ConnectToServer()

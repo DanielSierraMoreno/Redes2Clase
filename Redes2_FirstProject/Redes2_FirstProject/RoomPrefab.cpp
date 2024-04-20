@@ -58,9 +58,7 @@ void RoomPrefab::UpdatePosition(int x)
 	createdTime->setPosition(createdTime->posX + x, createdTime->posY);
 
 
-
 	enterAsPlayer->UpdatePosition(x);
-
 
 
 	enterAsSpectator->UpdatePosition(x);

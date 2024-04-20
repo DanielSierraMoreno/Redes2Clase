@@ -27,17 +27,14 @@ void RoomSelectionScreen::CreateRoom()
 	if (newRoomName->stringContent == "")
 		return;
 
-	int x = 200;
-	if (rooms.size() != 0)
-	{
-		x = rooms[rooms.size()-1]->background->getPosition().x + 300;
-	}
+	Packet roomPacket;
+	RoomData roomData = RoomData((int)rooms.size(), newRoomName->stringContent, Utils::timestamp32ToString(timestamp));
+	roomData.Code(roomPacket);
 
-	RoomData* roomData = new RoomData((int)rooms.size(), newRoomName->stringContent, Utils::timestamp32ToString(timestamp));
-
-	RoomPrefab* prefab = new RoomPrefab(x, 300, roomData, this);
-	rooms.push_back(prefab);
-
+	if (clientData->serverSocket->Send(CreateRoomRequest, roomPacket))
+		std::cout << "CreatedRoom";
+	else
+		std::cout << "Error Creating Room";
 
 	newRoomName->stringContent = "";
 	newRoomName->UpdateTextContent(false);
@@ -50,14 +47,34 @@ void RoomSelectionScreen::SetData(Lobby* data)
 
 void RoomSelectionScreen::Update()
 {
+	UpdateRooms();
+	ResetScroll();
+
 	Draw();
 	Events();
+	
+}
 
+void RoomSelectionScreen::UpdateRooms()
+{
+	CPVector<RoomData> roomsData = clientData->GetRoomsData();
+	if (roomsData.size() != rooms.size())
+	{
+		rooms.clear();
+		for (RoomData* data : roomsData)
+		{
+			int x = 200;
+			if (rooms.size() != 0)
+			{
+				x = rooms[rooms.size() - 1]->background->getPosition().x + 300;
+			}
+			RoomPrefab* prefab = new RoomPrefab(x, 300, data, this);
+			rooms.push_back(prefab);
+		}
+	}
 	for (int i = 0; i < rooms.size(); i++)
 	{
 		rooms[i]->UpdatePosition(GetScroll());
 
 	}
-		ResetScroll();
-
 }

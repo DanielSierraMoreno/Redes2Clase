@@ -147,15 +147,12 @@
     <ClCompile Include="Lobby.cpp" />
     <ClCompile Include="ClientScreen.cpp" />
     <ClCompile Include="ConsoleControl.cpp" />
-    <ClCompile Include="CreateRoomRequest.cpp" />
-    <ClCompile Include="CreateRoomResponse.cpp" />
     <ClCompile Include="EnPassant.cpp" />
     <ClCompile Include="InputText.cpp" />
     <ClCompile Include="King.cpp" />
     <ClCompile Include="Knight.cpp" />
     <ClCompile Include="MainScreen.cpp" />
     <ClCompile Include="RoomPrefab.cpp" />
-    <ClCompile Include="RoomRequestData.cpp" />
     <ClCompile Include="RoomSelectionScreen.cpp" />
     <ClCompile Include="ScreenManager.cpp" />
     <ClCompile Include="ServerScreen.cpp" />
@@ -169,7 +166,6 @@
     <ClCompile Include="Redes2_FirstProject.cpp" />
     <ClCompile Include="RoomData.cpp" />
     <ClCompile Include="RoomManager.cpp" />
-    <ClCompile Include="RoomsUpdate.cpp" />
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="SocketSelect.cpp" />
     <ClCompile Include="SocketsManager.cpp" />
@@ -201,7 +197,6 @@
     <ClInclude Include="LoginRequestData.h" />
     <ClInclude Include="MainScreen.h" />
     <ClInclude Include="RoomPrefab.h" />
-    <ClInclude Include="RoomRequestData.h" />
     <ClInclude Include="RoomSelectionScreen.h" />
     <ClInclude Include="ScreenManager.h" />
     <ClInclude Include="ServerScreen.h" />

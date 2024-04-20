@@ -34,6 +34,9 @@
     <Filter Include="Header Files\Screens">
       <UniqueIdentifier>{fc7d1a8f-b4be-454d-ae2c-4a17e3ac53c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Codables">
+      <UniqueIdentifier>{9edad4df-6142-4062-a69f-680695a23690}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TcpSocket.cpp">
@@ -90,12 +93,6 @@
     <ClCompile Include="ConsoleControl.cpp">
       <Filter>Source Files\Other</Filter>
     </ClCompile>
-    <ClCompile Include="CreateRoomRequest.cpp">
-      <Filter>Source Files\Other</Filter>
-    </ClCompile>
-    <ClCompile Include="CreateRoomResponse.cpp">
-      <Filter>Source Files\Other</Filter>
-    </ClCompile>
     <ClCompile Include="EnPassant.cpp">
       <Filter>Source Files\Other</Filter>
     </ClCompile>
@@ -115,9 +112,6 @@
       <Filter>Source Files\Other</Filter>
     </ClCompile>
     <ClCompile Include="RoomManager.cpp">
-      <Filter>Source Files\Other</Filter>
-    </ClCompile>
-    <ClCompile Include="RoomsUpdate.cpp">
       <Filter>Source Files\Other</Filter>
     </ClCompile>
     <ClCompile Include="SocketSelect.cpp">
@@ -157,9 +151,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TextureManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RoomRequestData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -218,31 +209,13 @@
     <ClInclude Include="Castle.h">
       <Filter>Header Files\Other</Filter>
     </ClInclude>
-    <ClInclude Include="CreateRoomRequest.h">
-      <Filter>Header Files\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="CreateRoomResponse.h">
-      <Filter>Header Files\Other</Filter>
-    </ClInclude>
     <ClInclude Include="EnPassant.h">
-      <Filter>Header Files\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="OnEnterAsPlayer.h">
-      <Filter>Header Files\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="OnEnterAsSpectator.h">
       <Filter>Header Files\Other</Filter>
     </ClInclude>
     <ClInclude Include="Promotion.h">
       <Filter>Header Files\Other</Filter>
     </ClInclude>
-    <ClInclude Include="RoomData.h">
-      <Filter>Header Files\Other</Filter>
-    </ClInclude>
     <ClInclude Include="RoomManager.h">
-      <Filter>Header Files\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="RoomsUpdate.h">
       <Filter>Header Files\Other</Filter>
     </ClInclude>
     <ClInclude Include="SocketSelect.h">
@@ -287,14 +260,29 @@
     <ClInclude Include="TextureManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RoomRequestData.h">
+    <ClInclude Include="LoginRequestData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Codable.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Codables</Filter>
     </ClInclude>
-    <ClInclude Include="LoginRequestData.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="RoomsUpdate.h">
+      <Filter>Header Files\Codables</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomData.h">
+      <Filter>Header Files\Codables</Filter>
+    </ClInclude>
+    <ClInclude Include="OnEnterAsSpectator.h">
+      <Filter>Header Files\Codables</Filter>
+    </ClInclude>
+    <ClInclude Include="OnEnterAsPlayer.h">
+      <Filter>Header Files\Codables</Filter>
+    </ClInclude>
+    <ClInclude Include="CreateRoomResponse.h">
+      <Filter>Header Files\Codables</Filter>
+    </ClInclude>
+    <ClInclude Include="CreateRoomRequest.h">
+      <Filter>Header Files\Codables</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

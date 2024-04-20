@@ -6,24 +6,24 @@ SocketsManager::SocketsManager(OnSocketConnected onSocketConnected)
 	_OnSocketConnected = onSocketConnected;
 
 }
-
-
-
-SocketsManager::~SocketsManager()
-{
-	delete _listener;
-	for (TcpSocket* socket : _sockets)
-	{
-		delete socket;
-	}
-}
-
-void SocketsManager::StartLoop()
-{
-	_isRunningMutex.lock();
-
-	if (_isRunning)
-	{
+																					  
+																					  
+																					  
+SocketsManager::~SocketsManager()													  
+{																					  
+	delete _listener;																  
+	for (TcpSocket* socket : _sockets)												  
+	{																				  
+		delete socket;																  
+	}																				  
+}																					  
+																					  
+void SocketsManager::StartLoop()													  
+{																					  
+	_isRunningMutex.lock();															  
+																					  
+	if (_isRunning)																	  
+	{																				  
 		_isRunningMutex.unlock();
 		return;
 	}
@@ -32,7 +32,7 @@ void SocketsManager::StartLoop()
 	_isRunningMutex.unlock();
 
 	std::thread* loopThread = new std::thread(&SocketsManager::SelectorLoop, this); //Comencem el bucle del selector perque vagi gestion els packets i conexions que es reben
-	loopThread->detach();
+	loopThread->detach(); 
 }
 
 bool SocketsManager::StartListener(unsigned short port)
