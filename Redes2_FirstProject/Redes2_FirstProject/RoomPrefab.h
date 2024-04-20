@@ -14,6 +14,9 @@ public:
 	Button* enterAsPlayer;
 	Button* enterAsSpectator;
 	RoomData* data;
+	Screen* screen;
 	void UpdatePosition(int x);
+	~RoomPrefab();
+
 };
 

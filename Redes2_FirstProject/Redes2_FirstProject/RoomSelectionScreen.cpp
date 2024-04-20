@@ -55,11 +55,17 @@ void RoomSelectionScreen::Update()
 	
 }
 
+
 void RoomSelectionScreen::UpdateRooms()
 {
 	CPVector<RoomData> roomsData = clientData->GetRoomsData();
 	if (roomsData.size() != rooms.size())
 	{
+		for (int i = 0; i < rooms.size(); i++)
+		{
+			delete rooms[i];
+		}
+
 		rooms.clear();
 		for (RoomData* data : roomsData)
 		{

@@ -6,11 +6,15 @@
 #include <map>
 #include <list>
 #include "tile.h"
+#include "Screen.h"
+#include <string>
+#include <vector>
+#include "Address.h"
+#include "Codable.h"
 
 
 
-
-class Board {
+class Board :public Screen{
 private:
     const float WIDTH = 1450;
     const float HEIGTH = 850;
@@ -29,7 +33,7 @@ public:
     Tile* pickedPieceTile;
     std::vector<Player*> players;
     Player* currentPlayer;
-    Board();
+    Board(int W, int H, std::string name);
     void TrySelectPiece(Vector2D boardIndex);
     void TryReleasePiece(Vector2D releaseBoardIndex);
     void run();
@@ -51,3 +55,5 @@ public:
     std::vector<Vector2D> FilterEmpty(std::vector<Vector2D> tiles);
 
 };
+
+

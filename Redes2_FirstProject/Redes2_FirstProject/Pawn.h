@@ -14,8 +14,8 @@ private:
 
 public:
 	Pawn(sf::Texture* texture, Vector2D pos);
-	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D ArrayIndex, Board board, PieceColor current);
-	std::vector<Vector2D> GetPosiblesAttackMoves(Vector2D ArrayIndex, Board board, PieceColor current);
+	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D ArrayIndex, Board* board, PieceColor current);
+	std::vector<Vector2D> GetPosiblesAttackMoves(Vector2D ArrayIndex, Board* board, PieceColor current);
 
 };
 

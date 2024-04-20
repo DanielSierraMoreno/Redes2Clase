@@ -3,6 +3,7 @@
 
 
 
+
 RoomPrefab::RoomPrefab()
 {
 }
@@ -11,6 +12,7 @@ RoomPrefab::RoomPrefab(int x, int y, RoomData* _data, Screen* currentScreen)
 {
 	data = _data;
 
+	screen = currentScreen;
 	background = new sf::Sprite(TextureManager::getInstance().buttonTexture);
 	background->setColor(sf::Color(100, 100, 100, 255));
 	sf::FloatRect bounds = background->getLocalBounds(); 
@@ -34,6 +36,8 @@ RoomPrefab::RoomPrefab(int x, int y, RoomData* _data, Screen* currentScreen)
 	enterAsPlayer->setScale(1.1, 0.5);
 	enterAsPlayer->setColor(sf::Color::Red);
 	enterAsPlayer->AddOnClickListener([this]() {
+
+
 		});
 
 
@@ -43,6 +47,8 @@ RoomPrefab::RoomPrefab(int x, int y, RoomData* _data, Screen* currentScreen)
 	enterAsSpectator->setScale(1.1, 0.5);
 	enterAsSpectator->setColor(sf::Color::Red);
 	enterAsSpectator->AddOnClickListener([this]() {
+
+
 		});
 
 
@@ -63,4 +69,18 @@ void RoomPrefab::UpdatePosition(int x)
 
 	enterAsSpectator->UpdatePosition(x);
 
+}
+
+RoomPrefab::~RoomPrefab()
+{
+	screen->RemoveDrawable(enterAsSpectator);
+	screen->RemoveDrawable(enterAsPlayer);
+	screen->RemoveDrawable(&createdTime->text);
+	screen->RemoveDrawable(&name->text);
+	screen->RemoveDrawable(background);
+	delete enterAsSpectator;
+	delete enterAsPlayer;
+	delete createdTime;
+	delete name;
+	delete background;
 }

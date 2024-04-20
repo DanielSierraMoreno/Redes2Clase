@@ -51,7 +51,7 @@ public:
 	Vector2D GetPos();
 	PieceColor GetColor();
 	bool CheckBounds(unsigned int x, unsigned int y);
-	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D ArrayIndex, Board board, PieceColor current);
+	virtual std::vector<Vector2D> GetPosiblesMoves(Vector2D ArrayIndex, Board* board, PieceColor current);
 	bool CheckMove(Vector2D pos);
 
 };

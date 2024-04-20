@@ -19,6 +19,8 @@ private:
 public:
 	InputText* selectedInputText;
 	Screen(int W, int H, std::string name);
+
+
 	void AddDraweable(sf::Drawable* draweable);
 	virtual void Update();
 	void Draw();
@@ -31,5 +33,6 @@ public:
 	bool isOpen();
 	int GetScroll();
 	void ResetScroll();
+	void RemoveDrawable(sf::Drawable* drawableToRemove);
 };
 

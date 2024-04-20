@@ -120,6 +120,13 @@ void Screen::ResetScroll()
 {
     scroll = 0;
 }
+void Screen::RemoveDrawable(sf::Drawable* drawableToRemove)
+{
+    auto it = std::find(drawables.begin(), drawables.end(), drawableToRemove);
+    if (it != drawables.end()) {
+        drawables.erase(it); // Eliminar el Drawable de la lista
+    }
+}
 float Screen::GetMiddleScreenY()
 {
     return window.getSize().x/2;

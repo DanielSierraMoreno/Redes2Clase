@@ -47,10 +47,16 @@ void Lobby::ConnectToServer(std::string name, std::string ip, unsigned short por
             std::cout << "Client Received a RoomUpdate" << std::endl;
 
             lobbyMutex->lock();
-            if (roomsData == nullptr)
-                roomsData = new RoomsUpdateData(p);
+            if (roomsData.rooms.size() == 0)
+            {
+                RoomsUpdateData newRooms;
+                newRooms.Decode(p);
+                roomsData = newRooms;
+            }
+
             else {
-                roomsData->Decode(p);
+                roomsData.rooms.clear();
+                roomsData.Decode(p);
             }
             lobbyMutex->unlock();
             });
@@ -84,10 +90,10 @@ void Lobby::CreateServer()
             Packet roomsDataPacket;
 
             lobbyMutex->lock();
-            if (roomsData != nullptr)
-                roomsData->Code(roomsDataPacket);
+            if (roomsData.rooms.size() > 0)
+                roomsData.Code(roomsDataPacket);
             else
-                roomsData = new RoomsUpdateData(roomsDataPacket);
+                roomsData = RoomsUpdateData(roomsDataPacket);
             lobbyMutex->unlock();
 
             lobbyMutex->lock();
@@ -97,17 +103,17 @@ void Lobby::CreateServer()
             if (!socket->Send(RoomsUpdate, roomsDataPacket))
                 std::cout << "Server failed to send room update" << std::endl;
             else
-                std::cout << "Loaded a total of" << roomsData->rooms.size() << std::endl;
+                std::cout << "Loaded a total of" << roomsData.rooms.size() << std::endl;
 
             });
         socket->Subscribe(CreateRoomRequest, [socket, this, playerID](Packet packet) {
 
-            RoomData data(packet);
+            RoomData* data = new RoomData(packet);
             Packet roomsPacketToSend;
 
             lobbyMutex->lock();
-            roomsData->rooms.push_back(&data);
-            roomsData->Code(roomsPacketToSend);
+            roomsData.rooms.push_back(data);
+            roomsData.Code(roomsPacketToSend);
             lobbyMutex->unlock();
 
             playersMutex.lock();
@@ -123,6 +129,37 @@ void Lobby::CreateServer()
             }
             playersMutex.unlock();
             });
+
+        socket->Subscribe(EnterAsPlayer, [socket, this, playerID](Packet packet) {
+
+
+
+
+            });
+        socket->Subscribe(EnterAsSpectator, [socket, this, playerID](Packet packet) {
+
+            RoomData* data = new RoomData(packet);
+            Packet roomsPacketToSend;
+
+            lobbyMutex->lock();
+            roomsData.rooms.push_back(data);
+            roomsData.Code(roomsPacketToSend);
+            lobbyMutex->unlock();
+
+            playersMutex.lock();
+            for (auto it = playersInLobby.begin(); it != playersInLobby.end(); it++) {
+                {
+                    if (it->second.second->Send(RoomsUpdate, roomsPacketToSend)) {
+                        std::cout << "Sending Update To All: " << std::endl;
+                    }
+                    else {
+                        std::cout << "Sending Update Error: " << std::endl;
+                    }
+                }
+            }
+            playersMutex.unlock();
+            });
+
         });
 
     if (SM->StartListener(port))
@@ -161,7 +198,7 @@ bool Lobby::CheckIfEnterServer()
 
 CPVector<RoomData> Lobby::GetRoomsData()
 {
-    return roomsData->rooms;
+    return roomsData.rooms;
 }
 
 bool Lobby::CheckError(sf::Socket::Status STATUS, std::string error)

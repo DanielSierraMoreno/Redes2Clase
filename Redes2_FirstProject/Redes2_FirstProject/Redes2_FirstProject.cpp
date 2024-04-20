@@ -23,7 +23,7 @@ int main()
 {
     sf::TcpSocket socket;
     char mode;
-    Board board;
+
 
     RoomManager manager;
 

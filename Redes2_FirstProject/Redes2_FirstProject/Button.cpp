@@ -10,7 +10,7 @@ Button::Button(float x, float y, sf::Texture texture, std::string textName, Scre
 	this->setPosition(x, y);
 	this->setTexture(texture);
 	currentScrren->AddDraweable(this);
-
+	screen = currentScrren;
 	name = new Text(this->GetMiddlePosX(), this->GetMiddlePosY(), textName, fontSize);
 	name->CenterText();
 
@@ -21,6 +21,12 @@ Button::Button(float x, float y, sf::Texture texture)
 {
 	this->setPosition(x, y);
 	this->setTexture(texture);
+}
+
+Button::~Button()
+{
+	screen->RemoveDrawable(&name->text);
+	delete name;
 }
 
 bool Button::CheckBounds(unsigned int x, unsigned int y)

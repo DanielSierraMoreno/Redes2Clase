@@ -44,12 +44,12 @@ bool Piece::CheckBounds(unsigned int x, unsigned int y)
 	return this->getGlobalBounds().contains(x, y);
 }
 
-std::vector<Vector2D> Piece::GetPosiblesMoves(Vector2D ArrayIndex, Board board, PieceColor current)
+std::vector<Vector2D> Piece::GetPosiblesMoves(Vector2D ArrayIndex, Board* board, PieceColor current)
 {
 	posibleMoves.clear();
 	for (Vector2D move : movements)
 	{
-		std::vector<Vector2D> additionalMoves = board.GetPositionsFromDirection(ArrayIndex, current, move, range);
+		std::vector<Vector2D> additionalMoves = board->GetPositionsFromDirection(ArrayIndex, current, move, range);
 		posibleMoves.insert(posibleMoves.end(), additionalMoves.begin(), additionalMoves.end());
 	}
 

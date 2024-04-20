@@ -8,7 +8,7 @@
 #include "Pawn.h"
 #include "Bishop.h"
 
-Board::Board()
+Board::Board(int W, int H, std::string name) : Screen(W, H, name)
 {
     players.push_back(new Player(WHITE));
     players.push_back(new Player(BLACK));
@@ -130,19 +130,19 @@ std::vector<Vector2D> Board::GetEnemyPosibleMovements(PieceColor current)
             if (boardTiles[Vector2D(x, y)]->type == king)
             {
                 std::vector<Vector2D> list2;
-                list2 = dynamic_cast<King*>(boardTiles[Vector2D(x, y)]->piece)->GetPosiblesMovesFake(Vector2D(x, y), *this, enemyColor);
+                list2 = dynamic_cast<King*>(boardTiles[Vector2D(x, y)]->piece)->GetPosiblesMovesFake(Vector2D(x, y), this, enemyColor);
                 list.insert(list.end(), list2.begin(), list2.end());
             }
             else if (boardTiles[Vector2D(x, y)]->type == pawn)
             {
                 std::vector<Vector2D> list2;
-                list2 = dynamic_cast<Pawn*>(boardTiles[Vector2D(x, y)]->piece)->GetPosiblesAttackMoves(Vector2D(x, y), *this, enemyColor);
+                list2 = dynamic_cast<Pawn*>(boardTiles[Vector2D(x, y)]->piece)->GetPosiblesAttackMoves(Vector2D(x, y), this, enemyColor);
                 list.insert(list.end(), list2.begin(), list2.end());
             }
             else
             {
                 std::vector<Vector2D> list2;
-                list2 = boardTiles[Vector2D(x, y)]->piece->GetPosiblesMoves(Vector2D(x, y), *this, enemyColor);
+                list2 = boardTiles[Vector2D(x, y)]->piece->GetPosiblesMoves(Vector2D(x, y), this, enemyColor);
                 list.insert(list.end(), list2.begin(), list2.end());
             }
         }
@@ -204,7 +204,7 @@ void Board::CheckJaque(PieceColor current)
         }
         boardTiles[kingPos]->marca->setFillColor(sf::Color(255, 0, 0, 64));
 
-        if(boardTiles[kingPos]->piece->GetPosiblesMoves(kingPos, *this,currentPlayer->playerColor).size() == 0)
+        if(boardTiles[kingPos]->piece->GetPosiblesMoves(kingPos, this,currentPlayer->playerColor).size() == 0)
         {
             currentPlayer->jaqueMate = true;
         }
@@ -294,7 +294,7 @@ void Board::TrySelectPiece(Vector2D boardIndex)
     {
         pickedPieceTile = boardTiles[boardIndex];
         ResetPosibleMoves();
-        PosibleMoves(pickedPieceTile->piece->GetPosiblesMoves(boardIndex, *this, currentPlayer->playerColor));
+        PosibleMoves(pickedPieceTile->piece->GetPosiblesMoves(boardIndex, this, currentPlayer->playerColor));
         int size = pickedPieceTile->piece->posibleMoves.size();
         if (size <= 0)
             pickedPieceTile = nullptr;
@@ -303,7 +303,7 @@ void Board::TrySelectPiece(Vector2D boardIndex)
     {
         pickedPieceTile = boardTiles[boardIndex];
         ResetPosibleMoves();
-        PosibleMoves(pickedPieceTile->piece->GetPosiblesMoves(boardIndex, *this, currentPlayer->playerColor));
+        PosibleMoves(pickedPieceTile->piece->GetPosiblesMoves(boardIndex, this, currentPlayer->playerColor));
         int size = pickedPieceTile->piece->posibleMoves.size();
         if (size <= 0)
             pickedPieceTile = nullptr;

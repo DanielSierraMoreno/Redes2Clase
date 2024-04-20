@@ -7,14 +7,19 @@
 #include "RoomData.h"
 #include "SocketsManager.h"
 #include "RoomsUpdate.h"
+#include "Pieces.h"
+#include "Board.h"
 
-enum PackagesIds : Packet::PacketKey { RoomsUpdate = 0, OnLogin = 1, CreateRoomRequest = 2, CreateRoomResponse = 3};
+enum PackagesIds : Packet::PacketKey { RoomsUpdate = 0, OnLogin = 1, CreateRoomRequest = 2, CreateRoomResponse = 3, EnterAsPlayer = 4, EnterAsSpectator = 5  };
 
 class Lobby
 {
 private:
 	unsigned short port;
 	bool _isServer = false;
+
+	PieceColor playerColor;
+
 
 	sf::IpAddress _serverAddress;
 
@@ -23,7 +28,7 @@ private:
 
 	SocketsManager* SM;
 	std::mutex* lobbyMutex,playersMutex;
-	RoomsUpdateData* roomsData;
+	RoomsUpdateData roomsData;
 	std::string PlayerName;
 
 	std::map<int, std::pair<std::string, TcpSocket*>> playersInLobby;

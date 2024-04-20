@@ -8,6 +8,7 @@ public:
 	RoomsUpdateData(Packet& p) {
 		Code(p);
 	}
+	RoomsUpdateData() {}
 	void Code(sf::Packet& packet) override {
 		packet /*<< packetKey*/ << rooms;
 	}

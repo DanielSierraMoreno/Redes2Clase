@@ -15,7 +15,7 @@ public:
 	Button();
 	Button(float x, float y,sf::Texture texture, std::string textName, Screen* currentScrren, int fontSize);
 	Button(float x, float y, sf::Texture texture);
-
+	~Button();
 	bool CheckBounds(unsigned int x, unsigned int y);
 	float GetMiddlePosX() const;
 	float GetLeftPivotX() const;
@@ -28,6 +28,7 @@ private:
 	sf::Texture texture;
 	sf::Sprite sprite;
 	Text* name;
+	Screen* screen;
 
 };
 
