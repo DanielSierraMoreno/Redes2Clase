@@ -23,7 +23,28 @@ inline sf::Packet& operator >>(sf::Packet& packet, ICodable& codable)
 	return packet;
 }
 
+class CPString : public ICodable
+{
+public:
+	CPString() = default;
+	CPString(std::string name) { this->name = name; }
 
+	CPString(Packet& p) {
+		Decode(p);
+	}
+	std::string name;
+
+	void Code(sf::Packet& packet) override {
+		packet << name;
+
+	}
+	void Decode(sf::Packet& packet) override {
+		packet >> name;
+
+	}
+
+
+};
 template<typename T, typename = typename std::enable_if<std::is_base_of<ICodable, T>::value>::type>
 class CPVector : public std::vector<T*>, public ICodable
 {

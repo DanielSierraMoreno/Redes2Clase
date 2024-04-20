@@ -74,7 +74,7 @@ void RoomSelectionScreen::UpdateRooms()
 			{
 				x = rooms[rooms.size() - 1]->background->getPosition().x + 300;
 			}
-			RoomPrefab* prefab = new RoomPrefab(x, 300, data, this);
+			RoomPrefab* prefab = new RoomPrefab(x, 300, data, this, clientData);
 			rooms.push_back(prefab);
 		}
 	}

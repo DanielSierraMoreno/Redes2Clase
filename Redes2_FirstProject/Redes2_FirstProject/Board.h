@@ -33,10 +33,10 @@ public:
     Tile* pickedPieceTile;
     std::vector<Player*> players;
     Player* currentPlayer;
+
     Board(int W, int H, std::string name);
     void TrySelectPiece(Vector2D boardIndex);
     void TryReleasePiece(Vector2D releaseBoardIndex);
-    void run();
     Piece* GetEmptyPiece(Vector2D pixelPos);
     void PosibleMoves(std::vector<Vector2D> moves);
     void ResetPosibleMoves();
@@ -57,3 +57,76 @@ public:
 };
 
 
+
+class RoomInfo : public ICodable
+{
+public:
+    RoomInfo() = default;
+    RoomInfo(Packet& p) {
+        Decode(p);
+    }
+
+    void Code(sf::Packet& packet) override {
+        packet << playersNames << spectatorsNames;
+
+    }
+    void Decode(sf::Packet& packet) override {
+        packet >> playersNames >> spectatorsNames;
+
+    }
+    CPVector<CPString> playersNames;
+    CPVector<CPString> spectatorsNames;
+
+};
+
+class RoomsInfo : public ICodable
+{
+public:
+    RoomsInfo() = default;
+    RoomsInfo(Packet& p) {
+        Decode(p);
+    }
+
+
+
+
+
+    void Code(sf::Packet& packet) override {
+        packet << roomsInfo;
+
+    }
+    void Decode(sf::Packet& packet) override {
+        packet >> roomsInfo;
+
+    }
+    CPVector<RoomInfo> roomsInfo;
+
+};
+
+
+class EnterRoom : public ICodable
+{
+public:
+    EnterRoom() = default;
+    EnterRoom(Packet& p) {
+        Decode(p);
+    }
+    EnterRoom(std::string name, int id) {
+        this->name = name;
+        this->id = id;
+    };
+
+    std::string name;
+    int id;
+
+
+
+    void Code(sf::Packet& packet) override {
+        packet << name << id;
+
+    }
+    void Decode(sf::Packet& packet) override {
+        packet >> name >> id;
+
+    }
+};

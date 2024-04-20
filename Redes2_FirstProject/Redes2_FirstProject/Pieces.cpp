@@ -6,7 +6,8 @@
 
 Piece::Piece()
 {
-
+	this->SetPiece(sf::IntRect(320, 0, 64, 64), NONE);
+	this->setColor(sf::Color(0, 0, 0, 0));
 }
 Piece::Piece(sf::Texture* texture, Vector2D pos)
 {

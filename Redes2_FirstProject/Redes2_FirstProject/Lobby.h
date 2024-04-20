@@ -9,8 +9,9 @@
 #include "RoomsUpdate.h"
 #include "Pieces.h"
 #include "Board.h"
+#include "Codable.h"
 
-enum PackagesIds : Packet::PacketKey { RoomsUpdate = 0, OnLogin = 1, CreateRoomRequest = 2, CreateRoomResponse = 3, EnterAsPlayer = 4, EnterAsSpectator = 5  };
+enum PackagesIds : Packet::PacketKey { RoomsUpdate = 0, OnLogin = 1, CreateRoomRequest = 2, CreateRoomResponse = 3, EnterAsPlayer = 4, EnterAsSpectator = 5, PlayerColor = 6  };
 
 class Lobby
 {
@@ -20,6 +21,8 @@ private:
 
 	PieceColor playerColor;
 
+	RoomsInfo roomsInfo;
+	Board* game;
 
 	sf::IpAddress _serverAddress;
 
@@ -45,13 +48,34 @@ private:
 	bool CheckError(sf::Socket::Status STATUS, std::string error);
 
 public:
+	std::string GetPlayerName() { return PlayerName; };
 	static Lobby* Server(unsigned short _port);
 	static Lobby* Client(std::string name,std::string ip, unsigned short port);
 	bool CheckIfEnterServer();
 	TcpSocket* serverSocket;
 	CPVector<RoomData> GetRoomsData();
 
+	void EnterRoomAsPlayer(std::string name, int id);
+	void EnterRoomAsSpectator(std::string name, int id);
 
 };
 
-	
+
+
+
+class PlayerType : public ICodable {
+public:
+	PlayerType(Packet& p) {
+		Decode(p);
+	}
+	PlayerType(int color) { playerColor = color; }
+	int playerColor;
+
+
+	void Code(sf::Packet& packet) override {
+		packet /*<< packetKey*/ << playerColor;
+	}
+	void Decode(sf::Packet& packet) override {
+		packet >> playerColor;
+	}
+};

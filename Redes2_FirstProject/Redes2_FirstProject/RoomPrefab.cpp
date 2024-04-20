@@ -8,10 +8,10 @@ RoomPrefab::RoomPrefab()
 {
 }
 
-RoomPrefab::RoomPrefab(int x, int y, RoomData* _data, Screen* currentScreen)
+RoomPrefab::RoomPrefab(int x, int y, RoomData* _data, Screen* currentScreen, Lobby* client)
 {
 	data = _data;
-
+	this->client = client;
 	screen = currentScreen;
 	background = new sf::Sprite(TextureManager::getInstance().buttonTexture);
 	background->setColor(sf::Color(100, 100, 100, 255));
@@ -30,13 +30,12 @@ RoomPrefab::RoomPrefab(int x, int y, RoomData* _data, Screen* currentScreen)
 	currentScreen->AddDraweable(&createdTime->text);
 
 
-
 	enterAsPlayer = new Button(x,y-65, TextureManager::getInstance().buttonTexture, "Enter As Player",currentScreen,30);
 	enterAsPlayer->CenterPivot();
 	enterAsPlayer->setScale(1.1, 0.5);
 	enterAsPlayer->setColor(sf::Color::Red);
 	enterAsPlayer->AddOnClickListener([this]() {
-
+		EnterAsPlayer();
 
 		});
 
@@ -48,14 +47,22 @@ RoomPrefab::RoomPrefab(int x, int y, RoomData* _data, Screen* currentScreen)
 	enterAsSpectator->setColor(sf::Color::Red);
 	enterAsSpectator->AddOnClickListener([this]() {
 
-
+		EnterAsSpectator();
 		});
 
 
 }
+void RoomPrefab::EnterAsPlayer() {
+	client->EnterRoomAsPlayer(client->GetPlayerName(), data->id);
+
+}
+void RoomPrefab::EnterAsSpectator() {
+	client->EnterRoomAsSpectator(client->GetPlayerName(), data->id);
+}
 
 void RoomPrefab::UpdatePosition(int x)
 {
+	
 
 	background->setPosition(background->getPosition().x+x, background->getPosition().y);
 

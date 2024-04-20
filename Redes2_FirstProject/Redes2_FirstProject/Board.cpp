@@ -93,6 +93,25 @@ Board::Board(int W, int H, std::string name) : Screen(W, H, name)
                 type));
         }
     }
+
+    AddDraweable(&board); //Pintar els renderizables
+
+    for (int i = 0; i < 8; i++)
+    {
+        for (int e = 0; e < 8; e++)
+        {
+            sf::Drawable* drawable = boardTiles[Vector2D(i, e)]->piece;
+            if (drawable != nullptr)
+            {
+                AddDraweable(drawable); //Pintar els renderizables
+            }
+            sf::Drawable* drawable2 = boardTiles[Vector2D(i, e)]->marca;
+            if (drawable != nullptr)
+            {
+                AddDraweable(drawable2); //Pintar els renderizables
+            }
+        }
+    }
 }
 
 Piece* Board::GetEmptyPiece(Vector2D pixelPos)
@@ -345,71 +364,3 @@ void Board::TryReleasePiece(Vector2D releaseBoardIndex)
         }
     }
 }
-
-void Board::run()
-{
-    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGTH), "Chess The Game Of Kings!");
-
-    while (window.isOpen())
-    {
-        window.clear(sf::Color::Black);
-
-        sf::Drawable* drawable = &board;
-        window.draw(*drawable); //Pintar els renderizables
-
-        for (int i = 0; i < 8; i++)
-        {
-            for (int e = 0; e < 8; e++)
-            {
-                sf::Drawable* drawable = boardTiles[Vector2D(i, e)]->piece;
-                if (drawable != nullptr)
-                {
-                    window.draw(*drawable); //Pintar els renderizables
-                }
-                sf::Drawable* drawable2 = boardTiles[Vector2D(i, e)]->marca;
-                if (drawable != nullptr)
-                {
-                    window.draw(*drawable2); //Pintar els renderizables
-                }
-            }
-        }
-
-        window.display();
-
-        sf::Event event;
-
-        while (window.pollEvent(event))
-        {
-            switch (event.type)
-            {
-            case sf::Event::Closed:
-                window.close();
-                break;
-            case sf::Event::MouseButtonPressed:
-
-                if (event.mouseButton.button == sf::Mouse::Left)
-                {
-                    sf::Vector2i clickPixelPos = { event.mouseButton.x, event.mouseButton.y };
-                    Vector2D mouseBoardIndex = WorldPosToBoard(Vector2D(clickPixelPos.x, clickPixelPos.y));
-
-                    TrySelectPiece(mouseBoardIndex);
-
-                    if (pickedPieceTile != nullptr)
-                        TryReleasePiece(mouseBoardIndex);
-                }
-                break;
-            case sf::Event::MouseButtonReleased:
-                if (event.mouseButton.button == sf::Mouse::Left)
-                {
-                }
-                break;
-            case sf::Event::MouseWheelScrolled:
-                //No hace falta
-                break;
-            default:
-                break;
-            }
-        }
-    }
-}
-
