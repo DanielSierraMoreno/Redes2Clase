@@ -11,13 +11,15 @@
 #include "Board.h"
 #include "Codable.h"
 
-enum PackagesIds : Packet::PacketKey { RoomsUpdate = 0, OnLogin = 1, CreateRoomRequest = 2, CreateRoomResponse = 3, EnterAsPlayer = 4, EnterAsSpectator = 5, PlayerColor = 6, SelectPiece = 7, ReleasePiece = 8, TryToStartGame = 9, SendSelectedPiece = 10, SendReleasedPiece = 11  };
+enum PackagesIds : Packet::PacketKey { RoomsUpdate = 0, OnLogin = 1, CreateRoomRequest = 2, CreateRoomResponse = 3, EnterAsPlayer = 4, EnterAsSpectator = 5, PlayerColor = 6, 
+	SelectPiece = 7, ReleasePiece = 8, TryToStartGame = 9, SendSelectedPiece = 10, SendReleasedPiece = 11, StartGame = 12, SendMessageToServer = 13, SendMessageToClients =14 };
 
 class Lobby
 {
 private:
 	unsigned short port;
 	bool _isServer = false;
+
 
 	PieceColor playerColor;
 
@@ -26,7 +28,7 @@ private:
 
 	sf::IpAddress _serverAddress;
 
-	std::vector<std::string> _messages;
+	std::vector<Message> _messages;
 	std::mutex _messageMutex;
 
 	SocketsManager* SM;
@@ -48,6 +50,9 @@ private:
 	bool CheckError(sf::Socket::Status STATUS, std::string error);
 
 public:
+	bool sendMessage;
+	PieceColor GetPlayerType() { return playerColor;  }
+	bool IsSpectator() { return playerColor == NONE; }
 	std::string GetPlayerName() { return PlayerName; };
 	static Lobby* Server(unsigned short _port);
 	static Lobby* Client(std::string name,std::string ip, unsigned short port);
@@ -61,6 +66,24 @@ public:
 };
 
 
+class PlayersNames : public ICodable {
+public:
+	PlayersNames(Packet& p) {
+		Decode(p);
+	}
+	PlayersNames() = default;
+
+	std::string playerWhiteName;
+	std::string playerBlackName;
+
+	void Code(sf::Packet& packet) override {
+		packet /*<< packetKey*/ << playerWhiteName << playerBlackName;
+	}
+	void Decode(sf::Packet& packet) override {
+		packet >> playerWhiteName >> playerBlackName;
+	}
+};
+
 
 
 class PlayerType : public ICodable {
@@ -71,11 +94,16 @@ public:
 	PlayerType(int color) { playerColor = color; }
 	int playerColor;
 	int roomId = 0;
+	CPVector<Message> messages;
+
+	CPVector<Position> selectedPositions;
+	CPVector<Position> releasedPositions;
+
 
 	void Code(sf::Packet& packet) override {
-		packet /*<< packetKey*/ << playerColor << roomId;
+		packet /*<< packetKey*/ << playerColor << roomId<< messages << selectedPositions << releasedPositions;
 	}
 	void Decode(sf::Packet& packet) override {
-		packet >> playerColor >> roomId;
+		packet >> playerColor >> roomId >> messages >> selectedPositions >> releasedPositions;
 	}
 };

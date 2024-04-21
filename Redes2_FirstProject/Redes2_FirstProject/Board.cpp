@@ -9,18 +9,22 @@
 #include "Bishop.h"
 #include "ScreenManager.h"
 #include "Lobby.h"
+#include "TextureManager.h"
 
 
 Board::Board(int W, int H, std::string name, Lobby* player) : Screen(W, H, name, false)
 {
+    gameStarted = false;
+  
+
+    currentPlayer = new Player(player->GetPlayerType());
+
 
     this->player = player;
     colorTurn = WHITE;
     ScreenManager::getInstance().AddScreen(this);
     visible = false;
-    players.push_back(new Player(WHITE));
-    players.push_back(new Player(BLACK));
-    currentPlayer = players[0];
+
     pickedPieceTile = nullptr;
     texturesPiece = new sf::Texture;
     if (!texturesPiece->loadFromFile("resources/Piezas.png"))
@@ -37,6 +41,11 @@ Board::Board(int W, int H, std::string name, Lobby* player) : Screen(W, H, name,
     board.setPosition(0, 0);
     board.setScale(3,3);
  
+
+    filtro.setTexture(TextureManager::getInstance().buttonTexture);
+    filtro.setPosition(0, 0);
+    filtro.setScale(4, 4);
+    filtro.setColor(sf::Color(100,100,100,100));
     for (int y = 0; y < 8; y++)
     {
         for (int x = 0; x < 8; x++)
@@ -120,6 +129,93 @@ Board::Board(int W, int H, std::string name, Lobby* player) : Screen(W, H, name,
             }
         }
     }
+
+
+
+
+
+
+    ipInput = new InputText(1100, H - 50, "", this,30);
+    ipInput->AddDraweable();
+    ipInput->stringContent = "";
+
+    sendMessage = new Button(1300, H - 50, TextureManager::getInstance().buttonTexture, "Send", this, 20);
+    sendMessage->CenterPivot();
+
+
+    sendMessage->setScale(0.35, 0.2);
+    sendMessage->setColor(sf::Color::Green);
+    sendMessage->AddOnClickListener([this]() {
+        SendMessage();
+        });
+    AddDraweable(sendMessage);
+
+    playerWhite = new Text(50, 25, "", 40);
+    playerWhite->CenterText();
+
+    this->AddDraweable(&playerWhite->text);
+
+    playerBlack = new Text(600, H-75, "", 40);
+    playerBlack->CenterText();
+
+    this->AddDraweable(&playerBlack->text);
+}
+void addLineBreaks(std::string& message) {
+    int lineLength = 0;
+    for (size_t i = 0; i < message.length(); ++i) {
+        if (message[i] == ' ' && lineLength >= 10) {
+            // Insertar salto de línea
+            message.insert(i, "\n");
+            // Restablecer contador de longitud de línea
+            lineLength = 0;
+        }
+        else {
+            ++lineLength;
+        }
+    }
+}
+
+void Board::SendMessage() {
+
+    if (ipInput->stringContent == "")
+        return;
+
+    Message* message = new Message();
+    message->message.name = ipInput->stringContent;
+    message->messageName.name = player->GetPlayerName();
+    message->roomId = roomId;
+    player->sendMessage = true;
+    addLineBreaks(message->message.name);
+    std::string _message = message->messageName.name + ":\n" + message->message.name;
+    Text* newMessage = new Text(1300, HEIGTH - 125, _message, 20);
+
+
+    for (int i = 0; i < messages.size(); i++)
+    {
+        messages[i]->setPosition(messages[i]->posX, messages[i]->posY - 50);
+    }
+
+
+    newMessage->CenterText();
+
+    this->AddDraweable(&newMessage->text);
+
+    messages.push_back(newMessage);
+
+
+    Packet messagePacket;
+    message->Code(messagePacket);
+
+    ipInput->stringContent = "";
+
+    ipInput->UpdateTextContent(true);
+
+    if (player->serverSocket->Send(SendMessageToServer, messagePacket))
+        std::cout << "Message send" << std::endl;
+    else
+        std::cout << "Failed to send message" << std::endl;
+
+
 }
 
 Piece* Board::GetEmptyPiece(Vector2D pixelPos)
@@ -196,6 +292,32 @@ std::vector<Vector2D> Board::FilterEmpty(std::vector<Vector2D> tiles)
             filteredList.push_back(tileIndex);
     }
     return filteredList;
+}
+
+void Board::PrintMessage(std::string messageName, std::string _message)
+{
+    if (player->sendMessage)
+    {
+        player->sendMessage = false;
+        return;
+    }
+    std::string message = messageName + ":\n" + _message;
+    Text* newMessage = new Text(1000, HEIGTH-125, message, 20);
+
+
+    for (int i = 0; i < messages.size(); i++)
+    {
+        messages[i]->setPosition(messages[i]->posX, messages[i]->posY - 50);
+    }
+
+
+    newMessage->CenterText();
+
+    this->AddDraweable(&newMessage->text);
+
+    messages.push_back(newMessage);
+
+
 }
 
 void Board::CheckJaque(PieceColor current)
@@ -291,6 +413,22 @@ Vector2D Board::WorldPosToBoard(Vector2D worldPos)
     int y = (((worldPos.y - startingPosY) / tileSize) - 1);
     return Vector2D(x,y);
 }
+void Board::SetPlayer()
+{
+    if (player->IsSpectator())
+        return;
+    AddDraweable(&filtro); //Pintar els renderizables
+
+
+    startButton = new Button(400, HEIGTH - 25, TextureManager::getInstance().buttonTexture, "Start game", this, 20);
+    startButton->CenterPivot();
+    startButton->setScale(0.35, 0.2);
+    startButton->setColor(sf::Color::Red);
+    startButton->AddOnClickListener([this]() {
+        StartGame();
+        });
+    
+}
 Vector2D Board::BoardToWorldPos(Vector2D boardPos) 
 {
     return Vector2D(startingPosX + (tileSize * (1 + boardPos.x)), startingPosY + (tileSize * (1 + boardPos.y)));
@@ -302,6 +440,22 @@ bool Board::CanMoveToTile(Tile* tile, PieceColor color)
 bool Board::IsTileEmpty(Tile* tile)
 {
     return tile->piece->GetColor() == NONE;
+}
+void Board::StartGame()
+{
+    if (currentPlayer->playerColor == NONE)
+        return;
+
+    EnterRoom* room = new EnterRoom();
+    room->id = roomId;
+    Packet startPacket;
+    room->Code(startPacket);
+
+    if (player->serverSocket->Send(TryToStartGame, startPacket))
+        std::cout << "Start" << std::endl;
+    else
+        std::cout << "Failed to start" << std::endl;
+
 }
 bool Board::IsTileAlly(Tile* tile, PieceColor color)
 {
@@ -315,18 +469,26 @@ void Board::SelectPiece(Vector2D boardIndex) {
     pickedPieceTile = boardTiles[boardIndex];
 
 }
+
 void Board::ReleasePiece(Vector2D releaseBoardIndex) {
     Vector2D boardPos = WorldPosToBoard(pickedPieceTile->piece->GetPos());
     Vector2D pixelPos = pickedPieceTile->piece->GetPos();
     pickedPieceTile->piece->alreadyMoved = true;
 
     pickedPieceTile->piece->SetPosition(boardTiles[releaseBoardIndex]->pos);
+
+    RemoveDrawable(boardTiles[releaseBoardIndex]->piece);
+
     boardTiles[releaseBoardIndex]->piece = pickedPieceTile->piece;
     boardTiles[releaseBoardIndex]->type = pickedPieceTile->type;
 
 
+
+    
     boardTiles[boardPos]->piece = GetEmptyPiece(pixelPos);
     boardTiles[boardPos]->type = None;
+
+    AddDraweable(boardTiles[boardPos]->piece);
 
     pickedPieceTile = nullptr;
     ResetPosibleMoves();
@@ -457,7 +619,7 @@ void Board::run()
                 break;
             case sf::Event::MouseButtonPressed:
 
-                if (event.mouseButton.button == sf::Mouse::Left)
+                if (event.mouseButton.button == sf::Mouse::Left && gameStarted)
                 {
                     sf::Vector2i clickPixelPos = { event.mouseButton.x, event.mouseButton.y };
                     Vector2D mouseBoardIndex = WorldPosToBoard(Vector2D(clickPixelPos.x, clickPixelPos.y));
@@ -495,19 +657,27 @@ void Board::Events()
             window.close();
             break;
         case sf::Event::MouseButtonPressed:
+            MouseButtonPressedEvents(event);
 
-            if (event.mouseButton.button == sf::Mouse::Left)
+            if (event.mouseButton.button == sf::Mouse::Left && gameStarted)
             {
                 sf::Vector2i clickPixelPos = { event.mouseButton.x, event.mouseButton.y };
                 Vector2D mouseBoardIndex = WorldPosToBoard(Vector2D(clickPixelPos.x, clickPixelPos.y));
 
-                TrySelectPiece(mouseBoardIndex);
 
-                if (pickedPieceTile != nullptr)
-                    TryReleasePiece(mouseBoardIndex);
+                if (mouseBoardIndex.x < 8)
+                {
+                    TrySelectPiece(mouseBoardIndex);
+
+                    if (pickedPieceTile != nullptr)
+                        TryReleasePiece(mouseBoardIndex);
+                }
+
             }
             break;
         case sf::Event::MouseButtonReleased:
+            MouseButtonRelesedEvents(event);
+
             if (event.mouseButton.button == sf::Mouse::Left)
             {
             }
@@ -515,6 +685,8 @@ void Board::Events()
         case sf::Event::MouseWheelScrolled:
             //No hace falta
             break;
+        case sf::Event::KeyPressed:
+            KeyPressedEvents(event);
         default:
             break;
         }

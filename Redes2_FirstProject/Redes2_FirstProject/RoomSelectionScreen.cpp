@@ -7,7 +7,7 @@ RoomSelectionScreen::RoomSelectionScreen(int W, int H, std::string name) : Scree
 {
 	visible = true;
 
-	newRoomName = new InputText(200, 50, "Room name: ", this);
+	newRoomName = new InputText(200, 50, "Room name: ", this, 10);
 	newRoomName->AddDraweable();
 	newRoomName->StartTyping();
 	Button* createRoomButton  = new Button(450, 50,TextureManager::getInstance().buttonTexture, "Create Room",this,20);

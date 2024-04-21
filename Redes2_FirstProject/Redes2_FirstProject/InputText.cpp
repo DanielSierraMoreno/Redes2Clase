@@ -1,7 +1,8 @@
 #include "InputText.h"
 #include "Screen.h"
-InputText::InputText(float x, float y, const std::string& content, Screen* screen)
+InputText::InputText(float x, float y, const std::string& content, Screen* screen, int _limit)
 {
+	limit = _limit;
 	stringContent = "";
 	startingString = content;
 	currentScreen = screen;
@@ -42,6 +43,8 @@ void InputText::DeleteChar()
 
 void InputText::AddChar(char c)
 {
+	if (stringContent.size()  >= limit)
+		return;
 	stringContent.push_back(c);
 	UpdateTextContent(true);
 }

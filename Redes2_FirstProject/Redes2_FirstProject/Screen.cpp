@@ -5,6 +5,7 @@ Screen::Screen(int W, int H,std::string _name, bool _fromStart)
     WIDTH = W;
     HEIGTH = H;
     name = _name;
+
     window.create(sf::VideoMode(WIDTH, HEIGTH), name);
 
 

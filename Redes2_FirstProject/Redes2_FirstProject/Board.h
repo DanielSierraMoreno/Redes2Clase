@@ -25,8 +25,17 @@ private:
 
 public:
     std::map<Vector2D, Tile*> boardTiles;
+    Button* startButton;
+    InputText* ipInput;
+    Button* sendMessage;
+    std::vector<Text*> messages;
+
+    Text* playerWhite;
+    Text* playerBlack;
+
 
     sf::Sprite board;
+    sf::Sprite filtro;
 
     sf::Texture* texturesPiece;
     sf::Texture* textureBoard;
@@ -40,6 +49,7 @@ public:
 
     Lobby* player;
 
+    bool gameStarted;
     int roomId;
     void run();
     virtual void Events() override;
@@ -48,11 +58,13 @@ public:
     void TrySelectPiece(Vector2D boardIndex);
     void TryReleasePiece(Vector2D releaseBoardIndex);
 
+    void SetPlayer();
     void SelectPiece(Vector2D boardIndex);
     void ReleasePiece(Vector2D releaseBoardIndex);
+    void StartGame();
 
-
-
+    void SendMessage();
+    void PrintMessage(std::string messageName, std::string message);
     Piece* GetEmptyPiece(Vector2D pixelPos);
     void PosibleMoves(std::vector<Vector2D> moves);
     void ResetPosibleMoves();
@@ -72,31 +84,66 @@ public:
 
 };
 
+class Message : public ICodable
+{
+public:
+    Message() = default;
+    Message(Packet& p) {
+        Decode(p);
+    }
+
+
+
+
+
+    void Code(sf::Packet& packet) override {
+        packet << message << messageName << roomId;
+
+    }
+    void Decode(sf::Packet& packet) override {
+        packet >> message >> messageName >> roomId;
+
+    }
+    CPString message;
+    CPString messageName;
+    int roomId;
+};
 
 
 class RoomInfo : public ICodable
 {
 public:
-    RoomInfo() = default;
+    RoomInfo() {
+        startGame = 0;
+    };
     RoomInfo(Packet& p) {
         Decode(p);
     }
 
     void Code(sf::Packet& packet) override {
-        packet << playersNames << spectatorsNames;
+        packet << playersNames << spectatorsNames << messages;
 
     }
     void Decode(sf::Packet& packet) override {
-        packet >> playersNames >> spectatorsNames;
+        packet >> playersNames >> spectatorsNames  >> messages;
 
     }
     CPVector<CPString> playersNames;
     CPVector<CPString> spectatorsNames;
 
+    CPVector<Message> messages;
+
+    Position* currentSelectedPosition;
 
     std::map<int, std::pair<std::string, TcpSocket*>> playersInRoom;
+    int startGame;
+    bool GameStarted() { return startGame >= 2; }
+
+    CPVector<Position> selectedPositions;
+    CPVector<Position> releasedPositions;
 
 };
+
 
 class RoomsInfo : public ICodable
 {

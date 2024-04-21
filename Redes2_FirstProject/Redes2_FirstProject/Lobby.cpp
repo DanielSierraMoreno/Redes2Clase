@@ -9,9 +9,7 @@
 
 void Lobby::ShowMessage(std::string message)
 {
-    _messageMutex.lock();
-    _messages.push_back(message);
-    _messageMutex.unlock();
+
 
     ConsoleControl::LockMutex();
     std::cout << std::endl << message;
@@ -50,10 +48,32 @@ void Lobby::ConnectToServer(std::string name, std::string ip, unsigned short por
 
             playerColor = (PieceColor)color->playerColor;
             lobbyMutex->lock();
+
             game->roomId = color->roomId;
             game->visible = true;
             game->currentPlayer->playerColor = playerColor;
+
+            for (int i = 0; i < color->messages.size(); i++)
+            {
+                game->PrintMessage(color->messages[i]->messageName.name, color->messages[i]->message.name);
+            }
+
+            for (int i = 0; i < color->selectedPositions.size(); i++)
+            {
+
+
+                game->SelectPiece(Vector2D(color->selectedPositions[i]->x, color->selectedPositions[i]->y));
+                game->ReleasePiece(Vector2D(color->releasedPositions[i]->x, color->releasedPositions[i]->y));
+
+            }
+
+
             lobbyMutex->unlock();
+
+
+
+
+            game->SetPlayer();
 
             });
 
@@ -81,6 +101,7 @@ void Lobby::ConnectToServer(std::string name, std::string ip, unsigned short por
             Position* posInfo = new Position(p);
             playersMutex.lock();
 
+
             game->SelectPiece(Vector2D(posInfo->x, posInfo->y));
 
             playersMutex.unlock();
@@ -96,8 +117,34 @@ void Lobby::ConnectToServer(std::string name, std::string ip, unsigned short por
             playersMutex.unlock();
 
             });
+        socket->Subscribe(StartGame, [socket, this](Packet p) {
+
+            playersMutex.lock();
+
+                game->gameStarted = true;
+                game->RemoveDrawable(&game->filtro);
+            
+                PlayersNames* names = new PlayersNames(p);
+
+                game->playerWhite->text.setString(names->playerWhiteName);
+                game->playerBlack->text.setString(names->playerBlackName);
+
+                game->RemoveDrawable(game->startButton);
+
+                delete game->startButton;
+
+            playersMutex.unlock();
 
 
+            });
+        socket->Subscribe(SendMessageToClients, [socket, this](Packet p) {
+            Message* messageInfo = new Message(p);
+            playersMutex.lock();
+            game->PrintMessage(messageInfo->messageName.name, messageInfo->message.name);
+          
+            playersMutex.unlock();
+
+            });
 
         Packet loginPacket;
         LoginRequestData loginData(PlayerName, loginPacket);
@@ -143,6 +190,42 @@ void Lobby::CreateServer()
                 std::cout << "Loaded a total of" << roomsData.rooms.size() << std::endl;
 
             });
+
+        socket->Subscribe(TryToStartGame, [socket, this, playerID](Packet packet) {
+
+            EnterRoom* room = new EnterRoom(packet);
+
+            RoomInfo* info = roomsInfo.roomsInfo[room->id];
+            lobbyMutex->lock();
+
+            info->startGame++;
+
+
+
+            PlayersNames* names = new PlayersNames();
+            names->playerWhiteName = info->playersNames[0]->name;
+
+            names->playerBlackName = info->playersNames[1]->name;
+            Packet players;
+            names->Code(players);
+
+            if (info->startGame >= 2)
+            {
+                for (auto it = info->playersInRoom.begin(); it != info->playersInRoom.end(); it++) {
+
+
+                        if (!it->second.second->Send(StartGame, players))
+                            std::cout << "Failed to enter as spectator" << std::endl;
+                        else
+                            std::cout << "Enter as spectator succes" << std::endl;
+    
+
+                }
+            }
+            lobbyMutex->unlock();
+
+            });
+
         socket->Subscribe(CreateRoomRequest, [socket, this, playerID](Packet packet) {
 
             RoomData* data = new RoomData(packet);
@@ -190,6 +273,10 @@ void Lobby::CreateServer()
                 {
                     PlayerType* color = new PlayerType(-1);
                     color->roomId = data->id;
+                    color->messages = info->messages;
+                    color->selectedPositions = info->selectedPositions;
+                    color->releasedPositions = info->releasedPositions;
+
                     Packet playerColorToSend;
                     color->Code(playerColorToSend);
 
@@ -206,7 +293,9 @@ void Lobby::CreateServer()
                 {
                     PlayerType* color = new PlayerType(1);
                     color->roomId = data->id;
-
+                    color->messages = info->messages;
+                    color->selectedPositions = info->selectedPositions;
+                    color->releasedPositions = info->releasedPositions;
                     Packet playerColorToSend;
                     color->Code(playerColorToSend);
 
@@ -241,10 +330,14 @@ void Lobby::CreateServer()
 
             PlayerType* color = new PlayerType(2);
             color->roomId = data->id;
-
+            color->messages = info->messages;
+            color->selectedPositions = info->selectedPositions;
+            color->releasedPositions = info->releasedPositions;
             Packet playerColorToSend;
             color->Code(playerColorToSend);
 
+
+            
 
 
             if (!socket->Send(PlayerColor, playerColorToSend))
@@ -267,6 +360,16 @@ void Lobby::CreateServer()
 
             bool select = posInfo->select;
 
+            if (select)
+            {
+                info->currentSelectedPosition = posInfo;
+            }
+            else
+            {
+                info->selectedPositions.push_back(info->currentSelectedPosition);
+
+                info->releasedPositions.push_back(posInfo);
+            }
 
  
             for (auto it = info->playersInRoom.begin(); it != info->playersInRoom.end(); it++) {
@@ -278,6 +381,9 @@ void Lobby::CreateServer()
 
                     if (select)
                     {
+                        Position* newPos = new Position();
+                        newPos->x = posInfo->x;
+                        newPos->y = posInfo->y;
 
                         if (!it->second.second->Send(SelectPiece, sendPosition))
                             std::cout << "Failed to enter as spectator" << std::endl;
@@ -285,6 +391,11 @@ void Lobby::CreateServer()
                             std::cout << "Enter as spectator succes" << std::endl;
                     }
                     else {
+                        Position* newPos = new Position();
+                        newPos->x = posInfo->x;
+                        newPos->y = posInfo->y;
+
+
                         if (!it->second.second->Send(ReleasePiece, sendPosition))
                             std::cout << "Failed to enter as spectator" << std::endl;
                         else
@@ -293,17 +404,35 @@ void Lobby::CreateServer()
 
             }
 
-           
-
-
-            
-            
-
-
-
             playersMutex.unlock();
 
         });
+        socket->Subscribe(SendMessageToServer, [socket, this, playerID](Packet packet) {
+
+            Message* messageInfo = new Message(packet);
+            playersMutex.lock();
+
+            roomsInfo.roomsInfo[messageInfo->roomId]->messages.push_back(messageInfo);
+
+            RoomInfo* info = roomsInfo.roomsInfo[messageInfo->roomId];
+
+            for (auto it = info->playersInRoom.begin(); it != info->playersInRoom.end(); it++) {
+
+                Packet messagePacket;
+
+                messageInfo->Code(messagePacket);
+
+                if (!it->second.second->Send(SendMessageToClients, messagePacket))
+                    std::cout << "Failed tosend message to client" << std::endl;
+                else
+                    std::cout << "Message send t client" << std::endl;
+    
+
+            }
+ 
+            playersMutex.unlock();
+
+            });
                 });
 
     if (SM->StartListener(port))
@@ -330,8 +459,9 @@ Lobby* Lobby::Client(std::string name, std::string ip, unsigned short port)
 
     Lobby* chat = new Lobby();
     chat->_serverAddress = sf::IpAddress(ip);
-    chat->game = new Board(1450, 850, "Game", chat);
+    chat->playerColor = NONE;
 
+    chat->game = new Board(1450, 850, "Game", chat);
     chat->ConnectToServer(name, ip, port);
     return chat;
 }

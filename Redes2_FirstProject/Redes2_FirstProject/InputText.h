@@ -6,8 +6,9 @@ class Screen;
 class InputText
 {
 public:
-    InputText(float x, float y, const std::string& content,Screen* screen);
+    InputText(float x, float y, const std::string& content,Screen* screen, int _limit);
     Text* text;
+    int limit;
     Button* background;
     void AddDraweable();
     void StartTyping();
