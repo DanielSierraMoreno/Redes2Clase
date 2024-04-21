@@ -15,11 +15,11 @@ private:
 	std::string name;
 	std::vector<Button*> buttons;
 	std::vector<sf::Drawable*> drawables;
-	sf::RenderWindow window;
 	int scroll;
 public:
 	bool visible;
 	bool fromStart;
+	sf::RenderWindow window;
 
 	InputText* selectedInputText;
 	Screen(int W, int H, std::string name, bool _fromStart);
@@ -28,7 +28,7 @@ public:
 	void AddDraweable(sf::Drawable* draweable);
 	virtual void Update();
 	void Draw();
-	void Events();
+	virtual void Events();
 	virtual void MouseButtonPressedEvents(sf::Event event);
 	virtual void MouseButtonRelesedEvents(sf::Event event);
 	virtual void KeyPressedEvents(sf::Event event);

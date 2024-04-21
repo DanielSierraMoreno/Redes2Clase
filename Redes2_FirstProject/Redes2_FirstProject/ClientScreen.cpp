@@ -12,7 +12,7 @@ ClientScreen::ClientScreen(int W, int H, std::string name) : Screen(W, H, name,t
 
 	ipInput = new InputText(200, 150, "Insert IP: ", this);
 	ipInput->AddDraweable();
-	ipInput->stringContent = "192.168.1.162";
+	ipInput->stringContent = "192.168.1.144";
 	portInput = new InputText(200, 200, "Insert PORT: ", this);
 	portInput->AddDraweable();
 	portInput->stringContent = "3001";

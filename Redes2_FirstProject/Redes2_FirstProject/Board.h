@@ -11,8 +11,10 @@
 #include <vector>
 #include "Address.h"
 #include "Codable.h"
+#include "TcpSocket.h"
 
 
+class Lobby;
 
 class Board :public Screen{
 private:
@@ -36,11 +38,21 @@ public:
 
     PieceColor colorTurn;
 
+    Lobby* player;
 
+    int roomId;
+    void run();
+    virtual void Events() override;
 
-    Board(int W, int H, std::string name);
+    Board(int W, int H, std::string name, Lobby* player);
     void TrySelectPiece(Vector2D boardIndex);
     void TryReleasePiece(Vector2D releaseBoardIndex);
+
+    void SelectPiece(Vector2D boardIndex);
+    void ReleasePiece(Vector2D releaseBoardIndex);
+
+
+
     Piece* GetEmptyPiece(Vector2D pixelPos);
     void PosibleMoves(std::vector<Vector2D> moves);
     void ResetPosibleMoves();
@@ -80,6 +92,9 @@ public:
     }
     CPVector<CPString> playersNames;
     CPVector<CPString> spectatorsNames;
+
+
+    std::map<int, std::pair<std::string, TcpSocket*>> playersInRoom;
 
 };
 

@@ -11,7 +11,7 @@
 #include "Board.h"
 #include "Codable.h"
 
-enum PackagesIds : Packet::PacketKey { RoomsUpdate = 0, OnLogin = 1, CreateRoomRequest = 2, CreateRoomResponse = 3, EnterAsPlayer = 4, EnterAsSpectator = 5, PlayerColor = 6  };
+enum PackagesIds : Packet::PacketKey { RoomsUpdate = 0, OnLogin = 1, CreateRoomRequest = 2, CreateRoomResponse = 3, EnterAsPlayer = 4, EnterAsSpectator = 5, PlayerColor = 6, SelectPiece = 7, ReleasePiece = 8, TryToStartGame = 9, SendSelectedPiece = 10, SendReleasedPiece = 11  };
 
 class Lobby
 {
@@ -70,12 +70,12 @@ public:
 	}
 	PlayerType(int color) { playerColor = color; }
 	int playerColor;
-
+	int roomId = 0;
 
 	void Code(sf::Packet& packet) override {
-		packet /*<< packetKey*/ << playerColor;
+		packet /*<< packetKey*/ << playerColor << roomId;
 	}
 	void Decode(sf::Packet& packet) override {
-		packet >> playerColor;
+		packet >> playerColor >> roomId;
 	}
 };

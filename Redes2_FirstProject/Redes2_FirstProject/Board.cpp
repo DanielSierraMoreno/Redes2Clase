@@ -8,10 +8,14 @@
 #include "Pawn.h"
 #include "Bishop.h"
 #include "ScreenManager.h"
+#include "Lobby.h"
 
 
-Board::Board(int W, int H, std::string name) : Screen(W, H, name, false)
+Board::Board(int W, int H, std::string name, Lobby* player) : Screen(W, H, name, false)
 {
+
+    this->player = player;
+    colorTurn = WHITE;
     ScreenManager::getInstance().AddScreen(this);
     visible = false;
     players.push_back(new Player(WHITE));
@@ -307,6 +311,35 @@ bool Board::IsTileEnemy(Tile* tile, PieceColor color)
 {
     return tile->piece->GetColor() == -color;
 }
+void Board::SelectPiece(Vector2D boardIndex) {
+    pickedPieceTile = boardTiles[boardIndex];
+
+}
+void Board::ReleasePiece(Vector2D releaseBoardIndex) {
+    Vector2D boardPos = WorldPosToBoard(pickedPieceTile->piece->GetPos());
+    Vector2D pixelPos = pickedPieceTile->piece->GetPos();
+    pickedPieceTile->piece->alreadyMoved = true;
+
+    pickedPieceTile->piece->SetPosition(boardTiles[releaseBoardIndex]->pos);
+    boardTiles[releaseBoardIndex]->piece = pickedPieceTile->piece;
+    boardTiles[releaseBoardIndex]->type = pickedPieceTile->type;
+
+
+    boardTiles[boardPos]->piece = GetEmptyPiece(pixelPos);
+    boardTiles[boardPos]->type = None;
+
+    pickedPieceTile = nullptr;
+    ResetPosibleMoves();
+
+
+
+
+
+    colorTurn = (colorTurn == WHITE) ? BLACK : WHITE;
+
+    CheckJaque(currentPlayer->playerColor);
+}
+
 void Board::TrySelectPiece(Vector2D boardIndex)
 {
     if (boardTiles[boardIndex]->type == PieceType::None|| colorTurn != currentPlayer->playerColor)
@@ -316,6 +349,18 @@ void Board::TrySelectPiece(Vector2D boardIndex)
     if (currentPlayer->jaque)
     {
         pickedPieceTile = boardTiles[boardIndex];
+
+        Packet positionPacket;
+
+        Position* pos = new Position(boardIndex.x, boardIndex.y,roomId, true);
+        pos->Code(positionPacket);
+
+        if (player->serverSocket->Send(SendSelectedPiece, positionPacket))
+            std::cout << "Selected piece send" << std::endl;
+        else
+            std::cout << "Failed to send selected piece" << std::endl;
+
+
         ResetPosibleMoves();
         PosibleMoves(pickedPieceTile->piece->GetPosiblesMoves(boardIndex, this, currentPlayer->playerColor));
         int size = pickedPieceTile->piece->posibleMoves.size();
@@ -325,6 +370,17 @@ void Board::TrySelectPiece(Vector2D boardIndex)
     else
     {
         pickedPieceTile = boardTiles[boardIndex];
+
+        Packet positionPacket;
+
+        Position* pos = new Position(boardIndex.x, boardIndex.y,roomId, true);
+        pos->Code(positionPacket);
+
+        if (player->serverSocket->Send(SendSelectedPiece, positionPacket))
+            std::cout << "Selected piece send" << std::endl;
+        else
+            std::cout << "Failed to send selected piece" << std::endl;
+
         ResetPosibleMoves();
         PosibleMoves(pickedPieceTile->piece->GetPosiblesMoves(boardIndex, this, currentPlayer->playerColor));
         int size = pickedPieceTile->piece->posibleMoves.size();
@@ -342,29 +398,125 @@ void Board::TryReleasePiece(Vector2D releaseBoardIndex)
             return;
         if (pickedPieceTile->piece->CheckMove(releaseBoardIndex))
         {
-            Vector2D boardPos = WorldPosToBoard(pickedPieceTile->piece->GetPos());
-            Vector2D pixelPos = pickedPieceTile->piece->GetPos();
-            pickedPieceTile->piece->alreadyMoved = true;
+            Packet positionPacket;
 
-            pickedPieceTile->piece->SetPosition(boardTiles[releaseBoardIndex]->pos);
-            boardTiles[releaseBoardIndex]->piece = pickedPieceTile->piece;
-            boardTiles[releaseBoardIndex]->type = pickedPieceTile->type;
+            Position* pos = new Position(releaseBoardIndex.x, releaseBoardIndex.y, roomId, false);
+            pos->Code(positionPacket);
 
-
-            boardTiles[boardPos]->piece = GetEmptyPiece(pixelPos);
-            boardTiles[boardPos]->type = None;
-
-            pickedPieceTile = nullptr;
-            ResetPosibleMoves();
-
-            //Mandar socket a todos los player
+            if (player->serverSocket->Send(SendSelectedPiece, positionPacket))
+                std::cout << "Selected piece send" << std::endl;
+            else
+                std::cout << "Failed to send selected piece" << std::endl;
 
             currentPlayer->jaque = false;
             currentPlayer->jaqueMate = false;
 
-            colorTurn = (colorTurn == WHITE) ? WHITE : BLACK;
+        }
+    }
+}
 
-            CheckJaque(currentPlayer->playerColor);
+
+void Board::run()
+{
+    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGTH), "Chess The Game Of Kings!");
+
+    while (window.isOpen())
+    {
+        window.clear(sf::Color::Black);
+
+        sf::Drawable* drawable = &board;
+        window.draw(*drawable); //Pintar els renderizables
+
+        for (int i = 0; i < 8; i++)
+        {
+            for (int e = 0; e < 8; e++)
+            {
+                sf::Drawable* drawable = boardTiles[Vector2D(i, e)]->piece;
+                if (drawable != nullptr)
+                {
+                    window.draw(*drawable); //Pintar els renderizables
+                }
+                sf::Drawable* drawable2 = boardTiles[Vector2D(i, e)]->marca;
+                if (drawable != nullptr)
+                {
+                    window.draw(*drawable2); //Pintar els renderizables
+                }
+            }
+        }
+
+        window.display();
+
+        sf::Event event;
+
+        while (window.pollEvent(event))
+        {
+            switch (event.type)
+            {
+            case sf::Event::Closed:
+                window.close();
+                break;
+            case sf::Event::MouseButtonPressed:
+
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    sf::Vector2i clickPixelPos = { event.mouseButton.x, event.mouseButton.y };
+                    Vector2D mouseBoardIndex = WorldPosToBoard(Vector2D(clickPixelPos.x, clickPixelPos.y));
+
+                    TrySelectPiece(mouseBoardIndex);
+
+                    if (pickedPieceTile != nullptr)
+                        TryReleasePiece(mouseBoardIndex);
+                }
+                break;
+            case sf::Event::MouseButtonReleased:
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                }
+                break;
+            case sf::Event::MouseWheelScrolled:
+                //No hace falta
+                break;
+            default:
+                break;
+            }
+        }
+    }
+}
+
+void Board::Events()
+{
+    sf::Event event;
+
+    while (window.pollEvent(event))
+    {
+        switch (event.type)
+        {
+        case sf::Event::Closed:
+            window.close();
+            break;
+        case sf::Event::MouseButtonPressed:
+
+            if (event.mouseButton.button == sf::Mouse::Left)
+            {
+                sf::Vector2i clickPixelPos = { event.mouseButton.x, event.mouseButton.y };
+                Vector2D mouseBoardIndex = WorldPosToBoard(Vector2D(clickPixelPos.x, clickPixelPos.y));
+
+                TrySelectPiece(mouseBoardIndex);
+
+                if (pickedPieceTile != nullptr)
+                    TryReleasePiece(mouseBoardIndex);
+            }
+            break;
+        case sf::Event::MouseButtonReleased:
+            if (event.mouseButton.button == sf::Mouse::Left)
+            {
+            }
+            break;
+        case sf::Event::MouseWheelScrolled:
+            //No hace falta
+            break;
+        default:
+            break;
         }
     }
 }
