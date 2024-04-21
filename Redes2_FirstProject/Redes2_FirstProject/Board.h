@@ -34,6 +34,10 @@ public:
     std::vector<Player*> players;
     Player* currentPlayer;
 
+    PieceColor colorTurn;
+
+
+
     Board(int W, int H, std::string name);
     void TrySelectPiece(Vector2D boardIndex);
     void TryReleasePiece(Vector2D releaseBoardIndex);

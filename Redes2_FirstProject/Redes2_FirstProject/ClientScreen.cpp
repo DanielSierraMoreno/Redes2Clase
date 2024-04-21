@@ -3,8 +3,9 @@
 #include "lobby.h"
 #include "RoomSelectionScreen.h"
 #include "ScreenManager.h"
-ClientScreen::ClientScreen(int W, int H, std::string name) : Screen(W, H, name)
+ClientScreen::ClientScreen(int W, int H, std::string name) : Screen(W, H, name,true)
 {
+	visible = true;
 	userNameInput = new InputText(200, 50, "Insert name: ", this);
 	userNameInput->AddDraweable();
 	userNameInput->StartTyping();

@@ -49,7 +49,11 @@ void Lobby::ConnectToServer(std::string name, std::string ip, unsigned short por
             PlayerType* color = new PlayerType(packet);
 
             playerColor = (PieceColor)color->playerColor;
+            lobbyMutex->lock();
 
+            game->visible = true;
+            game->currentPlayer->playerColor = playerColor;
+            lobbyMutex->unlock();
 
             });
 
@@ -188,8 +192,7 @@ void Lobby::CreateServer()
                 }
                     
             }
-           game = new Board(800, 600, "Game");
-           ScreenManager::getInstance().AddScreen(game);
+
            playersMutex.unlock();
 
 
@@ -218,8 +221,7 @@ void Lobby::CreateServer()
                 std::cout << "Enter as spectator succes" << std::endl;
 
 
-            //game = new Board(1450, 850, "Lobby");
-            //ScreenManager::getInstance().AddScreen(game);
+
             playersMutex.unlock();
 
 
@@ -248,8 +250,10 @@ Lobby* Lobby::Server(unsigned short _port)
 
 Lobby* Lobby::Client(std::string name, std::string ip, unsigned short port)
 {
+
     Lobby* chat = new Lobby();
     chat->_serverAddress = sf::IpAddress(ip);
+    chat->game = new Board(1450, 850, "Game");
 
     chat->ConnectToServer(name, ip, port);
     return chat;

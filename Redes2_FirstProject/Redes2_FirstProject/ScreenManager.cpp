@@ -13,7 +13,7 @@ void ScreenManager::UpdateAllScreens()
 {
 	for (size_t i = 0; i < screens.size(); ++i) {
 		Screen* screen = screens[i];
-		if (screen != nullptr && screen->isOpen()) {
+		if (screen != nullptr && screen->isOpen() && screen->visible) {
 			screen->Update();
 		}
 	}

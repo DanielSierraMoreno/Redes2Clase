@@ -4,8 +4,10 @@
 #include "ClientScreen.h"
 #include "thread"
 #include "ScreenManager.h"
-MainScreen::MainScreen(int W, int H, std::string name) : Screen(W,H,name)
+MainScreen::MainScreen(int W, int H, std::string name) : Screen(W,H,name,true)
 {
+	visible = true;
+
 	startServerButton = new Button(GetMiddleScreenX() + 200, GetMiddleScreenY(), TextureManager::getInstance().buttonTexture,"Server",this,40);
 	startServerButton->CenterPivot();
 	startServerButton->setColor(sf::Color::Magenta);

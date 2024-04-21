@@ -24,7 +24,6 @@ int main()
     sf::TcpSocket socket;
     char mode;
 
-
     RoomManager manager;
 
     MainScreen* mainScreen = new MainScreen(800, 800, "MainScreen");

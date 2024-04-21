@@ -12,13 +12,17 @@ class Screen
 private:
 	int WIDTH;
 	int HEIGTH;
+	std::string name;
 	std::vector<Button*> buttons;
 	std::vector<sf::Drawable*> drawables;
 	sf::RenderWindow window;
 	int scroll;
 public:
+	bool visible;
+	bool fromStart;
+
 	InputText* selectedInputText;
-	Screen(int W, int H, std::string name);
+	Screen(int W, int H, std::string name, bool _fromStart);
 
 
 	void AddDraweable(sf::Drawable* draweable);

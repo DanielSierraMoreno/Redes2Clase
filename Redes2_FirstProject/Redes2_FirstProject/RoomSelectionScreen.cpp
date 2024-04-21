@@ -3,8 +3,10 @@
 #include <thread>
 #include "Utils.h"
 
-RoomSelectionScreen::RoomSelectionScreen(int W, int H, std::string name) : Screen(W,H,name)
+RoomSelectionScreen::RoomSelectionScreen(int W, int H, std::string name) : Screen(W,H,name,true)
 {
+	visible = true;
+
 	newRoomName = new InputText(200, 50, "Room name: ", this);
 	newRoomName->AddDraweable();
 	newRoomName->StartTyping();
